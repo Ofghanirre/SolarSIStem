@@ -27,6 +27,7 @@ const GLuint VERTEX_ATTR_TEXCOORDS = 2;  // From shaders ./triangle.vs.glsl
 int main(int argc, char** argv) {
     // Initialize SDL and open a window
     SDLWindowManager windowManager(WINDOW_WIDTH, WINDOW_HEIGHT, "GLImac");
+    ManageEvent event(windowManager);
 
     // Initialize glew for OpenGL3+ support
     GLenum glewInitError = glewInit();
@@ -118,12 +119,7 @@ int main(int argc, char** argv) {
     bool done = false;
     while(!done) {
         // Event loop:
-        SDL_Event e;
-        while(windowManager.pollEvent(e)) {
-            if(e.type == SDL_QUIT) {
-                done = true; // Leave the loop after this iteration
-            }
-        }
+        done = event.exeEvent();
         /*********************************
          * HERE SHOULD COME THE RENDERING CODE
          *********************************/
@@ -135,7 +131,9 @@ int main(int argc, char** argv) {
             glUniform1i(earthProgram.uEarthTexture, 0);
             glUniform1i(earthProgram.uCloudTexture, 1);
 
-            glm::mat4 earthMVMatrix = globalMVMatrix;//glm::rotate(globalMVMatrix, windowManager.getTime(), glm::vec3(0, 1, 0));
+            glm::mat4 MVMatrixPlanetView = globalMVMatrix * event.getViewMatrix();
+            glm::mat4 earthMVMatrix = glm::rotate(MVMatrixPlanetView, windowManager.getTime(), glm::vec3(0, 1, 0));
+            //glm::mat4 earthMVMatrix = globalMVMatrix;//glm::rotate(globalMVMatrix, windowManager.getTime(), glm::vec3(0, 1, 0));
             //std::cerr<<ProjMatrix<<std::endl;
             glUniformMatrix4fv(earthProgram.uMVMatrix, 1, GL_FALSE, 
                 glm::value_ptr(earthMVMatrix));
@@ -154,7 +152,7 @@ int main(int argc, char** argv) {
             glBindTexture(GL_TEXTURE_2D, 0);
             glBindVertexArray(0); // On utilise l'array vao
 
-        moonProgram.use();
+            moonProgram.use();
             glUniform1i(moonProgram.uTexture, 0);
 
             glm::mat4 moonMVMatrix = glm::rotate(globalMVMatrix, windowManager.getTime(), glm::vec3(0, 1, 0));

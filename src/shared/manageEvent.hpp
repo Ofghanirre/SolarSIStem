@@ -9,13 +9,52 @@
 class ManageEvent {
 public:
     ManageEvent(glimac::SDLWindowManager &e) : m_event(e)
-    {};
+    {
+        lastPosX = m_event.getMousePosition().x;
+        lastPosY = m_event.getMousePosition().y;
+        lastMiddlePosY = m_event.getMousePosition().y;
+        rightClick = 0;
+        middleClick = 0;
+    };
 
     bool exeEvent()
     {
         SDL_Event e;
         while(m_event.pollEvent(e)) {
-    
+            /*
+            if(m_event.isMouseButtonPressed(SDL_BUTTON_RIGHT)){
+                // X angle
+                auto currentPosX = m_event.getMousePosition().x;
+                if(rightClick == 0){
+                    lastPosX = currentPosX;
+                }
+                view.rotateLeft(currentPosX - lastPosX);
+                lastPosX = currentPosX;
+
+                // Y angle
+                auto currentPosY = m_event.getMousePosition().y;
+                if(rightClick == 0){
+                    lastPosY = currentPosY;
+                }
+                view.rotateUp(currentPosY - lastPosY);
+                lastPosY = currentPosY;
+
+                rightClick = (rightClick + 1) % 2;
+            }
+
+            if(m_event.isMouseButtonPressed(SDL_BUTTON_MIDDLE)){
+                // Distance
+                auto currentMiddlePosY = m_event.getMousePosition().y;
+                if(middleClick == 0){
+                    lastMiddlePosY = currentMiddlePosY;
+                }
+                view.moveFront((currentMiddlePosY - lastMiddlePosY) * 0.1);
+                lastMiddlePosY = currentMiddlePosY;
+
+                middleClick = (middleClick + 1) % 2;
+            }
+            */
+            
             if(e.type == SDL_KEYDOWN) {
                 
                 switch(e.key.keysym.sym) {
@@ -52,5 +91,10 @@ public:
 private:
     glimac::SDLWindowManager &m_event;
     glimac::TrackBall view;
+    float lastPosX;
+    float lastPosY;
+    float lastMiddlePosY;
+    uint rightClick = 0;
+    uint middleClick = 0;
 };
 #endif
