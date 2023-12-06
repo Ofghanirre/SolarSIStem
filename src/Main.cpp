@@ -40,9 +40,9 @@ int main(int argc, char** argv) {
 
     // Loading & Compiling Textures
     GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID;
-    EARTH_TEXTURE_ID = registerNewTexture("/home/2ing2/antonin.jean/Documents/M2/S1/graphic/GLImac-Template/TP3/assets/textures/EarthMap.jpg");
-    MOON_TEXTURE_ID = registerNewTexture("/home/2ing2/antonin.jean/Documents/M2/S1/graphic/GLImac-Template/TP3/assets/textures/MoonMap.jpg");
-    CLOUD_TEXTURE_ID = registerNewTexture("/home/2ing2/antonin.jean/Documents/M2/S1/graphic/GLImac-Template/TP3/assets/textures/CloudMap.jpg");
+    EARTH_TEXTURE_ID = registerNewTexture("../assets/textures/EarthMap.jpg");
+    MOON_TEXTURE_ID = registerNewTexture("../assets/textures/MoonMap.jpg");
+    CLOUD_TEXTURE_ID = registerNewTexture("../assets/textures/CloudMap.jpg");
     std::cout << "done texture loading" << std::endl;
 
     // Loading & Compiling Shaders
