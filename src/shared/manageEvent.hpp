@@ -17,7 +17,7 @@ public:
         middleClick = 0;
     };
 
-    bool exeEvent()
+    bool exeEvent(bool move)
     {
         SDL_Event e;
         while(m_event.pollEvent(e)) {
@@ -55,7 +55,7 @@ public:
             }
             */
             
-            if(e.type == SDL_KEYDOWN) {
+            if(e.type == SDL_KEYDOWN && move) {
                 
                 switch(e.key.keysym.sym) {
                     case 273 : //haut
@@ -71,7 +71,7 @@ public:
                 };
             }
 
-            if(e.type == SDL_MOUSEMOTION) {
+            if(e.type == SDL_MOUSEMOTION && move) {
                 view.rotateLeft(e.motion.y);
                 view.rotateUp(e.motion.x);
                 //std::cout << e.motion.x << " / " << e.motion.y << std::endl;
