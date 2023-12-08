@@ -39,11 +39,12 @@ int main(int argc, char** argv) {
     glActiveTexture(GL_TEXTURE0);
 
     // Loading & Compiling Textures
-    GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID, SUN_TEXTURE_ID;
+    GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID, SUN_TEXTURE_ID, MERCURE_TEXTURE_ID;
     EARTH_TEXTURE_ID = registerNewTexture("../assets/textures/EarthMap.jpg");
     MOON_TEXTURE_ID = registerNewTexture("../assets/textures/MoonMap.jpg");
     CLOUD_TEXTURE_ID = registerNewTexture("../assets/textures/CloudMap.jpg");
     SUN_TEXTURE_ID = registerNewTexture("../assets/textures/SunMap.jpg");
+    MERCURE_TEXTURE_ID = registerNewTexture("../assets/textures/MercuryMap.jpg");
     std::cout << "done texture loading" << std::endl;
 
     // Loading & Compiling Shaders
@@ -51,6 +52,8 @@ int main(int argc, char** argv) {
     EarthProgram earthProgram(applicationPath);
     MoonProgram moonProgram(applicationPath);
     SunProgram sunProgram(applicationPath);
+    MercureProgram mercureProgram(applicationPath);
+    VenusProgram venusProgram(applicationPath);
 
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
@@ -63,10 +66,11 @@ int main(int argc, char** argv) {
 
     // Application loop:
     bool done = false;
+    bool cam_move = true;
     bool move = true;
     while(!done) {
         // Event loop:
-        done = event.exeEvent(move);
+        done = event.exeEvent(cam_move);
 
         // Uniform matrix refreshing
         glClearColor(0.0, 0.0, 0.1, 0.0);
@@ -75,8 +79,26 @@ int main(int argc, char** argv) {
         sunProgram.draw(ctxt.globalMVMatrix, 
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
-            windowManager.getTime(), 
+            (move ? windowManager.getTime() : 0), 
             SUN_TEXTURE_ID,
+            ctxt.vao, 
+            sphere
+        );
+
+        mercureProgram.draw(ctxt.globalMVMatrix, 
+            event.getViewMatrix(), 
+            ctxt.ProjMatrix, 
+            (move ? windowManager.getTime() : 0), 
+            MERCURE_TEXTURE_ID,
+            ctxt.vao, 
+            sphere
+        );
+
+        venusProgram.draw(ctxt.globalMVMatrix, 
+            event.getViewMatrix(), 
+            ctxt.ProjMatrix, 
+            (move ? windowManager.getTime() : 0), 
+            MERCURE_TEXTURE_ID,
             ctxt.vao, 
             sphere
         );
@@ -84,7 +106,7 @@ int main(int argc, char** argv) {
         glm::mat4 earthPos = earthProgram.draw(ctxt.globalMVMatrix, 
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
-            windowManager.getTime(), 
+            (move ? windowManager.getTime() : 0), 
             EARTH_TEXTURE_ID, 
             CLOUD_TEXTURE_ID, 
             ctxt.vao, 
@@ -95,7 +117,7 @@ int main(int argc, char** argv) {
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
             ctxt.NormalMatrix, 
-            windowManager.getTime(), 
+            (move ? windowManager.getTime() : 0), 
             MOON_TEXTURE_ID, 
             ctxt.vao, 
             sphere

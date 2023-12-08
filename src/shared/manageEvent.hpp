@@ -1,6 +1,4 @@
 #pragma once
-#ifndef MANAGEVENT
-#define MANAGEVENT
 
 #include <glimac/TrackballCamera.hpp>
 #include <glimac/SDLWindowManager.hpp>
@@ -97,4 +95,3 @@ private:
     uint rightClick = 0;
     uint middleClick = 0;
 };
-#endif
