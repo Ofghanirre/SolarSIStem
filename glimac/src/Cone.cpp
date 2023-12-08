@@ -78,5 +78,3 @@ void Cone::build(GLfloat height, GLfloat r, GLsizei discLat, GLsizei discHeight)
 }
 
 }
-
-
