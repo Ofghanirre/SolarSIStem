@@ -2,96 +2,99 @@
 
 #include <glimac/TrackballCamera.hpp>
 #include <glimac/SDLWindowManager.hpp>
+#include <SDL/SDL_events.h>
 
 
 class ManageEvent {
 public:
-    ManageEvent(glimac::SDLWindowManager &e) : m_event(e)
-    {
-        lastPosX = m_event.getMousePosition().x;
-        lastPosY = m_event.getMousePosition().y;
-        lastMiddlePosY = m_event.getMousePosition().y;
-        rightClick = 0;
-        middleClick = 0;
-    };
+    ManageEvent(glimac::SDLWindowManager &e) : m_event(e) {};
 
     bool exeEvent(bool move)
     {
         SDL_Event e;
         while(m_event.pollEvent(e)) {
-            /*
-            if(m_event.isMouseButtonPressed(SDL_BUTTON_RIGHT)){
-                // X angle
-                auto currentPosX = m_event.getMousePosition().x;
-                if(rightClick == 0){
-                    lastPosX = currentPosX;
-                }
-                view.rotateLeft(currentPosX - lastPosX);
-                lastPosX = currentPosX;
-
-                // Y angle
-                auto currentPosY = m_event.getMousePosition().y;
-                if(rightClick == 0){
-                    lastPosY = currentPosY;
-                }
-                view.rotateUp(currentPosY - lastPosY);
-                lastPosY = currentPosY;
-
-                rightClick = (rightClick + 1) % 2;
-            }
-
-            if(m_event.isMouseButtonPressed(SDL_BUTTON_MIDDLE)){
-                // Distance
-                auto currentMiddlePosY = m_event.getMousePosition().y;
-                if(middleClick == 0){
-                    lastMiddlePosY = currentMiddlePosY;
-                }
-                view.moveFront((currentMiddlePosY - lastMiddlePosY) * 0.1);
-                lastMiddlePosY = currentMiddlePosY;
-
-                middleClick = (middleClick + 1) % 2;
-            }
-            */
-            
             if(e.type == SDL_KEYDOWN && move) {
-                
-                switch(e.key.keysym.sym) {
-                    case 273 : //haut
-                        view.moveFront(0.1);
-                        break;
-                    case 274 : //bas
-                        view.moveFront(-0.1);
-                        break;
-                    case 276 : //gauche
-                    case 275 : //droite
-                    default : 
-                        std::cout << "key :" << e.key.keysym.sym << std::endl;
-                };
+                executeKey(e.key.keysym.sym, true);
+            }else if (e.type == SDL_KEYUP && move) {
+                m_pressed = false;
+                m_keyPressed = SDLK_LAST; 
             }
 
-            if(e.type == SDL_MOUSEMOTION && move) {
-                view.rotateLeft(e.motion.y);
-                view.rotateUp(e.motion.x);
-                //std::cout << e.motion.x << " / " << e.motion.y << std::endl;
+            if(e.type == SDL_MOUSEBUTTONDOWN) {
+                executeMouseKey(e.motion);
+            }else if(e.type == SDL_MOUSEBUTTONUP) {
+                m_mouse = false;
+            }else if(e.type == SDL_MOUSEMOTION && m_mouse && move) {
+                m_view.addRotateLeft(e.motion.y - lastPosY);
+                m_view.addRotateUp(e.motion.x - lastPosX);
+                lastPosX = e.motion.x;
+                lastPosY = e.motion.y;
             }
 
             if(e.type == SDL_QUIT) {
                 return true; // Leave the loop after this iteration
             }
         }
+        if(m_pressed) {
+            executeKey(m_keyPressed, m_pressed);
+        }
         return false;
     }
 
     glm::mat4 getViewMatrix()
     {
-        return view.getViewMatrix();
+        return m_view.getViewMatrix();
+    }
+
+    void changeCenterCamera(glm::mat4 PlanetPossition) {
+        m_view.changeCenterCamera(PlanetPossition);
     }
 private:
+    void executeKey(SDLKey key, bool pres) {
+        switch(key) {
+            case SDLK_UP : //haut
+                m_pressed = pres;
+                m_keyPressed = SDLK_UP;
+                m_view.moveFront(-0.1);
+                break;
+            case SDLK_DOWN : //bas
+                m_pressed = pres;
+                m_keyPressed = SDLK_DOWN;
+                m_view.moveFront(0.1);
+                break;
+            case SDLK_LEFT : //gauche
+                // change planet view
+            case SDLK_RIGHT : //droite
+                // change planet view
+            default : 
+                std::cout << "key :" << key << std::endl;
+        };
+    }
+
+    void executeMouseKey(SDL_MouseMotionEvent mouse) {
+        switch (mouse.state){
+            case SDL_BUTTON_LEFT:
+                m_mouse = true;
+                lastPosX = mouse.x;
+                lastPosY = mouse.y;
+                break;
+            case SDL_BUTTON_WHEELUP:
+                m_view.moveFront(0.1);
+                break;
+            case SDL_BUTTON_WHEELDOWN:
+                m_view.moveFront(-0.1);
+                break;
+            case SDL_BUTTON_RIGHT:
+            default:
+                std::cout << "mouse key :" << mouse.state << std::endl;
+        }
+    }
+
     glimac::SDLWindowManager &m_event;
-    glimac::TrackBall view;
-    float lastPosX;
-    float lastPosY;
-    float lastMiddlePosY;
-    uint rightClick = 0;
-    uint middleClick = 0;
+    glimac::TrackBall m_view;
+    bool m_pressed = false;
+    SDLKey m_keyPressed = SDLK_LAST; 
+    bool m_mouse = false;
+    int lastPosX = 0;
+    int lastPosY = 0;
 };
