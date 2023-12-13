@@ -57,17 +57,21 @@ int main(int argc, char** argv) {
 
     // Loading & Compiling Shaders
     FilePath applicationPath(argv[0]);
-    EarthProgram earthProgram(applicationPath);
-    MoonProgram moonProgram(applicationPath);
-    SunProgram sunProgram(applicationPath);
-    MercureProgram mercureProgram(applicationPath);
-    VenusProgram venusProgram(applicationPath);
-    MarsProgram marsProgram(applicationPath);
-    JupiterProgram jupiterProgram(applicationPath);
-    SaturneProgram saturneProgram(applicationPath);
-    UranusProgram uranusProgram(applicationPath);
-    NeptuneProgram neptuneProgram(applicationPath);
-    PlutonProgram plutonProgram(applicationPath);
+    Program program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/multiTex3D.fs.glsl"));
+    //
+    //MoonProgram moonProgram(applicationPath);
+    SunProgram sunProgram(program, "uSunTexture");
+    MercureProgram mercureProgram(program, "uMercureTexture");
+    EarthProgram earthProgram(program, "uEarthTexture");
+    //VenusProgram venusProgram(applicationPath);
+    //MarsProgram marsProgram(applicationPath);
+    //JupiterProgram jupiterProgram(applicationPath);
+    //SaturneProgram saturneProgram(applicationPath);
+    //UranusProgram uranusProgram(applicationPath);
+    //NeptuneProgram neptuneProgram(applicationPath);
+    //PlutonProgram plutonProgram(applicationPath);
+
+    std::cout << "done generate planet" << std::endl;
 
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
@@ -80,21 +84,21 @@ int main(int argc, char** argv) {
 
     // Application loop:
     bool done = false;
-    bool cam_move = false;
-    bool move = false;
+    bool cam_move = true;
+    bool move = true;
     while(!done) {
         // Event loop:
         done = event.exeEvent(cam_move);
 
         // Uniform matrix refreshing
-        glClearColor(0.0, 0.8, 0.1, 0.0);
+        glClearColor(0.0, 0.0, 0.1, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clears le buffer et le depth buffer
 
         sunProgram.draw(ctxt.globalMVMatrix, 
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
             (move ? windowManager.getTime() : 0), 
-            { SUN_TEXTURE_ID},
+            SUN_TEXTURE_ID,
             ctxt.vao, 
             sphere
         );
@@ -103,90 +107,16 @@ int main(int argc, char** argv) {
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
             (move ? windowManager.getTime() : 0), 
-            {MERCURE_TEXTURE_ID},
-            ctxt.vao, 
-            sphere
-        );
-
-        venusProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
             MERCURE_TEXTURE_ID,
             ctxt.vao, 
             sphere
         );
-        
-        glm::mat4 earthPos = earthProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            EARTH_TEXTURE_ID, 
-            CLOUD_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
 
-        moonProgram.draw(earthPos, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            ctxt.NormalMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            MOON_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        marsProgram.draw(ctxt.globalMVMatrix, 
+        earthProgram.draw(ctxt.globalMVMatrix, 
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
             (move ? windowManager.getTime() : 0), 
-            MARS_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        jupiterProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            JUPITER_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        saturneProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            SATURNE_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        uranusProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            URANUS_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        neptuneProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            NEPTUNE_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        plutonProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            PLUTON_TEXTURE_ID, 
+            EARTH_TEXTURE_ID,
             ctxt.vao, 
             sphere
         );
