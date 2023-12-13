@@ -87,14 +87,14 @@ int main(int argc, char** argv) {
         done = event.exeEvent(cam_move);
 
         // Uniform matrix refreshing
-        glClearColor(0.0, 0.0, 0.1, 0.0);
+        glClearColor(0.0, 0.8, 0.1, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clears le buffer et le depth buffer
 
         sunProgram.draw(ctxt.globalMVMatrix, 
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
             (move ? windowManager.getTime() : 0), 
-            SUN_TEXTURE_ID,
+            { SUN_TEXTURE_ID},
             ctxt.vao, 
             sphere
         );
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
             (move ? windowManager.getTime() : 0), 
-            MERCURE_TEXTURE_ID,
+            {MERCURE_TEXTURE_ID},
             ctxt.vao, 
             sphere
         );

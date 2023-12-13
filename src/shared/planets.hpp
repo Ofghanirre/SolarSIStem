@@ -5,6 +5,103 @@
 
 using namespace glimac;
 
+struct SatteliteContext {
+
+    SatteliteContext(glm::vec3 _rotation_axis, glm::vec3 _initial_position): 
+        rotation_axis{_rotation_axis},
+        initial_position{_initial_position}
+    {}
+
+    const glm::vec3 rotation_axis;
+    const glm::vec3 initial_position;
+};
+
+struct AStellarObject {
+    Program m_Program;
+
+    const float m_coeff_diametre;
+    const float m_dist_sol;
+
+    GLint m_uMVPMatrix;
+    GLint m_uMVMatrix;
+    GLint m_uNormalMatrix;
+    std::vector<GLuint> m_textures;
+    std::vector<const GLchar*> m_textures_name;
+    SatteliteContext m_sattelite_context;
+
+    AStellarObject(const FilePath& applicationPath, 
+                    float coeff_diametre, 
+                    float dist_sol,
+                    std::vector<const GLchar*> textures_uniform_locations,
+                    SatteliteContext sattelite_context
+        ) : m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl",
+                                  applicationPath.dirPath() + "shaders/multiTex3D.fs.glsl")), 
+            m_coeff_diametre{coeff_diametre},
+            m_dist_sol{dist_sol},
+            m_sattelite_context{sattelite_context}
+    {
+        for (const auto& iter_tex_uniform_location : textures_uniform_locations) {
+            m_textures_name.push_back(iter_tex_uniform_location);
+            m_textures.push_back(checkValid(glGetUniformLocation(m_Program.getGLId(), 
+                iter_tex_uniform_location), iter_tex_uniform_location));
+        }
+    }
+
+
+    void update() {
+        m_uMVPMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix"), "uMVPMatrix");
+        m_uMVMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVMatrix"), "uMVMatrix");
+        m_uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");
+        for (int i = 0; m_textures_name.size(); i++) {
+            m_textures[i] = checkValid(glGetUniformLocation(m_Program.getGLId(), 
+                m_textures_name[i]), m_textures_name[i]);
+        }
+    }
+
+    void use() {
+        m_Program.use();
+    }
+
+    virtual void draw(
+        glm::mat4 globalMVMatrix, 
+        glm::mat4 viewMatrix, 
+        glm::mat4 ProjMatrix, 
+        float time, 
+        std::vector<GLuint> TEXTURES_ID, 
+        GLuint vao, 
+        Sphere sphere) 
+    {
+        use();
+        
+        glm::mat4 MVMatrixPlanetView = globalMVMatrix * viewMatrix;
+        //glm::mat4 earthMVMatrix = glm::rotate(MVMatrixPlanetView, time, glm::vec3(0, 1, 0));
+        glm::mat4 objectMVMatrix = glm::rotate(MVMatrixPlanetView, time/2, m_sattelite_context.rotation_axis); // Translation * Rotation
+        objectMVMatrix = glm::translate(objectMVMatrix, m_sattelite_context.initial_position); // Translation * Rotation * Translation
+        glm::mat4 MVMatrixPos = objectMVMatrix;
+        objectMVMatrix = glm::scale(objectMVMatrix, glm::vec3(m_coeff_diametre, m_coeff_diametre, m_coeff_diametre)); // Translation * Rotation * Translation * Scale
+        objectMVMatrix = glm::rotate(objectMVMatrix, time, m_sattelite_context.rotation_axis); // Translation * Rotation
+
+        glUniformMatrix4fv(m_uMVMatrix, 1, GL_FALSE, 
+            glm::value_ptr(objectMVMatrix));
+        glUniformMatrix4fv(m_uNormalMatrix, 1, GL_FALSE, 
+            glm::value_ptr(glm::transpose(glm::inverse(objectMVMatrix))));
+        glUniformMatrix4fv(m_uMVPMatrix, 1, GL_FALSE, 
+            glm::value_ptr(ProjMatrix * objectMVMatrix));
+
+        // Textures Loading
+        for (int i = 0; i < TEXTURES_ID.size(); i++) {
+            glUniform1i(TEXTURES_ID[i], i);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, i);
+        }
+
+        glBindVertexArray(vao); // On utilise l'array vao
+        glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindVertexArray(0); // On utilise l'array vao
+    }
+};
+
 struct SunProgram {
     Program m_Program;
 
@@ -37,89 +134,40 @@ struct SunProgram {
     void draw(glm::mat4 globalMVMatrix, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, 
             float time, GLuint SUN_TEXTURE_ID, GLuint vao, Sphere sphere) {
         use();
-            glUniform1i(uSunTexture, 0);
+        glUniform1i(uSunTexture, 0);
 
-            glm::mat4 MVMatrixPlanetView = globalMVMatrix * viewMatrix;
-            glm::mat4 sunMVMatrix = glm::rotate(MVMatrixPlanetView, time, glm::vec3(0, 1, 0));
-            sunMVMatrix = glm::scale(sunMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre));
-            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, 
-                glm::value_ptr(sunMVMatrix));
-            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, 
-                glm::value_ptr(glm::transpose(glm::inverse(sunMVMatrix))));
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, 
-                glm::value_ptr(ProjMatrix * sunMVMatrix));
+        glm::mat4 MVMatrixPlanetView = globalMVMatrix * viewMatrix;
+        glm::mat4 sunMVMatrix = glm::rotate(MVMatrixPlanetView, time, glm::vec3(0, 1, 0));
+        sunMVMatrix = glm::scale(sunMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre));
+        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, 
+            glm::value_ptr(sunMVMatrix));
+        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, 
+            glm::value_ptr(glm::transpose(glm::inverse(sunMVMatrix))));
+        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, 
+            glm::value_ptr(ProjMatrix * sunMVMatrix));
 
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, SUN_TEXTURE_ID);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, SUN_TEXTURE_ID);
 
-            glBindVertexArray(vao); // On utilise l'array vao
-            glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glBindVertexArray(0); // On utilise l'array vao
+        glBindVertexArray(vao); // On utilise l'array vao
+        glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindVertexArray(0); // On utilise l'array vao
     }
 };
 
-struct MercureProgram {
-    Program m_Program;
+struct MercureProgram : public AStellarObject {
+    const float coef_diametre = 0.02439;
+    const float dist_sol = 2.06;
 
-    float coef_diametre = 0.02439;
-    float dist_sol = 2.06;
-    GLint uMVPMatrix;
-    GLint uMVMatrix;
-    GLint uNormalMatrix;
-    GLint uMercureTexture;
-    glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
-    glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
-
-    MercureProgram(const FilePath& applicationPath):
-        m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl",
-                              applicationPath.dirPath() + "shaders/multiTex3D.fs.glsl")) {
-        uMVPMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix"), "uMVPMatrix");
-        uMVMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVMatrix"), "uMVMatrix");
-        uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");
-        uMercureTexture = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMercureTexture"), "uMercureTexture");
-    }
-
-    void update() {
-        uMVPMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix"), "uMVPMatrix");
-        uMVMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVMatrix"), "uMVMatrix");
-        uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");
-        uMercureTexture = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMercureTexture"), "uMercureTexture");
-    }
-
-    void use() {
-        m_Program.use();
-    }
-
-    glm::mat4 draw(glm::mat4 globalMVMatrix, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, 
-            float time, GLuint MERCURE_TEXTURE_ID, GLuint vao, Sphere sphere) {
-        use();
-            glUniform1i(uMercureTexture, 0);
-
-            glm::mat4 MVMatrixPlanetView = globalMVMatrix * viewMatrix;
-            //glm::mat4 earthMVMatrix = glm::rotate(MVMatrixPlanetView, time, glm::vec3(0, 1, 0));
-            glm::mat4 mercureMVMatrix = glm::rotate(MVMatrixPlanetView, time/2, sattelites_rotation_axis); // Translation * Rotation
-            mercureMVMatrix = glm::translate(mercureMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
-            glm::mat4 MVMatrixPos = mercureMVMatrix;
-            mercureMVMatrix = glm::scale(mercureMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-            mercureMVMatrix = glm::rotate(mercureMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
-            
-            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, 
-                glm::value_ptr(mercureMVMatrix));
-            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, 
-                glm::value_ptr(glm::transpose(glm::inverse(mercureMVMatrix))));
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, 
-                glm::value_ptr(ProjMatrix * mercureMVMatrix));
-
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, MERCURE_TEXTURE_ID);
-
-            glBindVertexArray(vao); // On utilise l'array vao
-            glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glBindVertexArray(0); // On utilise l'array vao
-            return MVMatrixPos;
-    }
+    MercureProgram(const FilePath& applicationPath): AStellarObject{
+        applicationPath, 
+        coef_diametre, 
+        dist_sol, 
+        {"uMercureTexture"},
+        SatteliteContext(glm::vec3(0, 1, 0), glm::vec3(dist_sol, 0, 0)), 
+        } 
+    {}
 };
 
 struct VenusProgram {
