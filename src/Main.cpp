@@ -80,8 +80,8 @@ int main(int argc, char** argv) {
 
     // Application loop:
     bool done = false;
-    bool cam_move = true;
-    bool move = true;
+    bool cam_move = false;
+    bool move = false;
     while(!done) {
         // Event loop:
         done = event.exeEvent(cam_move);
