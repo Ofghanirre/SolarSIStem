@@ -1,6 +1,4 @@
 #pragma once
-#ifndef CONTEXT
-#define CONTEXT
 
 #include <glimac/Sphere.hpp>
 
@@ -64,6 +62,3 @@ struct Context
         glDeleteVertexArrays(1, &vao);
     }
 };
-
-
-#endif
