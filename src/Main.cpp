@@ -58,18 +58,18 @@ int main(int argc, char** argv) {
     // Loading & Compiling Shaders
     FilePath applicationPath(argv[0]);
     Program program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/multiTex3D.fs.glsl"));
-    //MoonProgram moonProgram(applicationPath);
+
     SunProgram sunProgram(program, {"uSunTexture"}, {SUN_TEXTURE_ID});
     MercureProgram mercureProgram(program, {"uMercureTexture"}, {MERCURE_TEXTURE_ID});
     VenusProgram venusProgram(program, {"uVenusTexture"}, {VENUS_TEXTURE_ID});
     EarthProgram earthProgram(program, {"uEarthTexture", "uCloudTexture"}, {EARTH_TEXTURE_ID, CLOUD_TEXTURE_ID});
     MoonProgram moonProgram(program, {"uMoonTexture"}, {MOON_TEXTURE_ID});
-    //MarsProgram marsProgram(applicationPath);
-    //JupiterProgram jupiterProgram(applicationPath);
-    //SaturneProgram saturneProgram(applicationPath);
-    //UranusProgram uranusProgram(applicationPath);
-    //NeptuneProgram neptuneProgram(applicationPath);
-    //PlutonProgram plutonProgram(applicationPath);
+    MarsProgram marsProgram(program, {"uMarsTexture"}, {MARS_TEXTURE_ID});
+    JupiterProgram jupiterProgram(program, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID});
+    SaturneProgram saturneProgram(program, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID});
+    UranusProgram uranusProgram(program, {"uUranusTexture"}, {URANUS_TEXTURE_ID});
+    NeptuneProgram neptuneProgram(program, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID});
+    PlutonProgram plutonProgram(program, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID});
 
     std::cout << "done generate planet" << std::endl;
 
@@ -78,6 +78,12 @@ int main(int argc, char** argv) {
     sunProgram.addSatelite(&mercureProgram);
     sunProgram.addSatelite(&venusProgram);
     sunProgram.addSatelite(&earthProgram);
+    sunProgram.addSatelite(&marsProgram);
+    sunProgram.addSatelite(&jupiterProgram);
+    sunProgram.addSatelite(&saturneProgram);
+    sunProgram.addSatelite(&uranusProgram);
+    sunProgram.addSatelite(&neptuneProgram);
+    sunProgram.addSatelite(&plutonProgram);
 
     std::cout << "done link planet with satelite" << std::endl;
 
@@ -109,31 +115,6 @@ int main(int argc, char** argv) {
             ctxt.vao, 
             sphere
         );
-        /*
-        mercureProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0),
-            ctxt.vao, 
-            sphere
-        );
-
-        venusProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0),
-            ctxt.vao, 
-            sphere
-        );
-        
-        earthProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0),
-            ctxt.vao, 
-            sphere
-        );
-        */
         
         // Update the display
         windowManager.swapBuffers();
