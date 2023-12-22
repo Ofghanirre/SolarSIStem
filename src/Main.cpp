@@ -61,6 +61,7 @@ int main(int argc, char** argv) {
 
     SunProgram sunProgram(program, {"uSunTexture"}, {SUN_TEXTURE_ID});
     MercureProgram mercureProgram(program, {"uMercureTexture"}, {MERCURE_TEXTURE_ID});
+    
     VenusProgram venusProgram(program, {"uVenusTexture"}, {VENUS_TEXTURE_ID});
     EarthProgram earthProgram(program, {"uEarthTexture", "uCloudTexture"}, {EARTH_TEXTURE_ID, CLOUD_TEXTURE_ID});
     MoonProgram moonProgram(program, {"uMoonTexture"}, {MOON_TEXTURE_ID});
@@ -70,7 +71,7 @@ int main(int argc, char** argv) {
     UranusProgram uranusProgram(program, {"uUranusTexture"}, {URANUS_TEXTURE_ID});
     NeptuneProgram neptuneProgram(program, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID});
     PlutonProgram plutonProgram(program, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID});
-
+    
     std::cout << "done generate planet" << std::endl;
 
     earthProgram.addSatelite(&moonProgram);
@@ -108,6 +109,9 @@ int main(int argc, char** argv) {
         glClearColor(0.0, 0.0, 0.1, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clears le buffer et le depth buffer
 
+        glm::mat4 tmpGlobalMVMatrix = sunProgram.getOnePosMatrix(ctxt.globalMVMatrix, 3, (move ? windowManager.getTime() : 0));
+        event.changeCenterCamera(tmpGlobalMVMatrix);
+
         sunProgram.drawAll(ctxt.globalMVMatrix, 
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
@@ -115,13 +119,23 @@ int main(int argc, char** argv) {
             ctxt.vao, 
             sphere
         );
+        //std::cout << ctxt.globalMVMatrix << std::endl;
         
         // Update the display
         windowManager.swapBuffers();
     }
     // Application free
     ctxt.free();
+    glDeleteTextures(1, &SUN_TEXTURE_ID);
+    glDeleteTextures(1, &MERCURE_TEXTURE_ID);
+    glDeleteTextures(1, &VENUS_TEXTURE_ID);
     glDeleteTextures(1, &EARTH_TEXTURE_ID);
     glDeleteTextures(1, &MOON_TEXTURE_ID);
+    glDeleteTextures(1, &MARS_TEXTURE_ID);
+    glDeleteTextures(1, &JUPITER_TEXTURE_ID);
+    glDeleteTextures(1, &SATURNE_TEXTURE_ID);
+    glDeleteTextures(1, &URANUS_TEXTURE_ID);
+    glDeleteTextures(1, &NEPTUNE_TEXTURE_ID);
+    glDeleteTextures(1, &PLUTON_TEXTURE_ID);
     return EXIT_SUCCESS;
 }

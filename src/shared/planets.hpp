@@ -73,6 +73,16 @@ struct AStellarObject {
         float time, 
         GLuint vao, 
         Sphere sphere) = 0;
+
+    virtual glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) = 0;
+
+    glm::mat4 getOnePosMatrix(glm::mat4 globalMVMatrix, uint index, float time) {
+        assert(index <= m_satelites.size());
+        if(index == 0){
+            return getPosMatrix(globalMVMatrix, time);
+        }
+        return m_satelites[index - 1]->getPosMatrix(globalMVMatrix, time);
+    }
 };
 
 
@@ -116,6 +126,10 @@ struct SunProgram : public AStellarObject{
         glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
+        return globalMVMatrix * viewMatrix;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
         return globalMVMatrix;
     }
 };
@@ -144,9 +158,8 @@ struct MercureProgram : public AStellarObject {
             glUniform1i(AStellarObject::m_textures[i], i);
         }
 
-        glm::mat4 MVMatrixPlanetView = globalMVMatrix * viewMatrix;
-        //glm::mat4 earthMVMatrix = glm::rotate(MVMatrixPlanetView, time, glm::vec3(0, 1, 0));
-        glm::mat4 mercureMVMatrix = glm::rotate(MVMatrixPlanetView, time/2, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 MVMatrixPlanetView = globalMVMatrix;// * viewMatrix;
+        glm::mat4 mercureMVMatrix = glm::rotate(MVMatrixPlanetView, time, sattelites_rotation_axis); // Translation * Rotation
         mercureMVMatrix = glm::translate(mercureMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = mercureMVMatrix;
         mercureMVMatrix = glm::scale(mercureMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
@@ -169,6 +182,13 @@ struct MercureProgram : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
         return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, glm::radians(180.f) + time, sattelites_rotation_axis);
+        MVMatrix = glm::translate(MVMatrix, sattelites_initial_position);
+        MVMatrix = glm::rotate(MVMatrix, glm::radians(180.f) - time, sattelites_rotation_axis);
+        return MVMatrix;
     }
 };
 
@@ -196,9 +216,8 @@ struct VenusProgram : public AStellarObject {
             glUniform1i(AStellarObject::m_textures[i], i);
         }
 
-        glm::mat4 MVMatrixPlanetView = globalMVMatrix * viewMatrix;
-        //glm::mat4 earthMVMatrix = glm::rotate(MVMatrixPlanetView, time, glm::vec3(0, 1, 0));
-        glm::mat4 venusMVMatrix = glm::rotate(MVMatrixPlanetView, time/2, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 MVMatrixPlanetView = globalMVMatrix;// * viewMatrix;
+        glm::mat4 venusMVMatrix = glm::rotate(MVMatrixPlanetView, time, sattelites_rotation_axis); // Translation * Rotation
         venusMVMatrix = glm::translate(venusMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = venusMVMatrix;
         venusMVMatrix = glm::scale(venusMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
@@ -221,6 +240,13 @@ struct VenusProgram : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
         return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, glm::radians(180.f) + time, sattelites_rotation_axis);
+        MVMatrix = glm::translate(MVMatrix, sattelites_initial_position);
+        MVMatrix = glm::rotate(MVMatrix, glm::radians(180.f) - time, sattelites_rotation_axis);
+        return MVMatrix;
     }
 };
 
@@ -248,9 +274,8 @@ struct EarthProgram : public AStellarObject {
             glUniform1i(AStellarObject::m_textures[i], i);
         }
 
-        glm::mat4 MVMatrixPlanetView = globalMVMatrix * viewMatrix;
-        //glm::mat4 earthMVMatrix = glm::rotate(MVMatrixPlanetView, time, glm::vec3(0, 1, 0));
-        glm::mat4 earthMVMatrix = glm::rotate(MVMatrixPlanetView, time/2, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 MVMatrixPlanetView = globalMVMatrix;// * viewMatrix;
+        glm::mat4 earthMVMatrix = glm::rotate(MVMatrixPlanetView, time, sattelites_rotation_axis); // Translation * Rotation
         earthMVMatrix = glm::translate(earthMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = earthMVMatrix;
         earthMVMatrix = glm::scale(earthMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
@@ -273,6 +298,13 @@ struct EarthProgram : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
         return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, glm::radians(180.f) + time, sattelites_rotation_axis);
+        MVMatrix = glm::translate(MVMatrix, sattelites_initial_position);
+        MVMatrix = glm::rotate(MVMatrix, glm::radians(180.f) - time, sattelites_rotation_axis);
+        return MVMatrix;
     }
 };
 
@@ -300,8 +332,8 @@ struct MoonProgram : public AStellarObject {
             glUniform1i(AStellarObject::m_textures[i], i);
         }
 
-        glm::mat4 MVMatrixSattelite = globalMVMatrix ;//* viewMatrix; // Translation
-        MVMatrixSattelite = glm::rotate(MVMatrixSattelite, time/2, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 MVMatrixSattelite = globalMVMatrix;//* viewMatrix; // Translation
+        MVMatrixSattelite = glm::rotate(MVMatrixSattelite, time, sattelites_rotation_axis); // Translation * Rotation
         MVMatrixSattelite = glm::translate(MVMatrixSattelite, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = MVMatrixSattelite;
         MVMatrixSattelite = glm::scale(MVMatrixSattelite, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
@@ -324,6 +356,13 @@ struct MoonProgram : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On réinitialise l'array vao
         return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, glm::radians(180.f) + time, sattelites_rotation_axis);
+        MVMatrix = glm::translate(MVMatrix, sattelites_initial_position);
+        MVMatrix = glm::rotate(MVMatrix, glm::radians(180.f) - time, sattelites_rotation_axis);
+        return MVMatrix;
     }
 };
 
@@ -351,8 +390,8 @@ struct MarsProgram : public AStellarObject {
             glUniform1i(AStellarObject::m_textures[i], i);
         }
 
-        glm::mat4 marsMVMatrix = globalMVMatrix * viewMatrix; // Translation
-        marsMVMatrix = glm::rotate(marsMVMatrix, time/2, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 marsMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
+        marsMVMatrix = glm::rotate(marsMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
         marsMVMatrix = glm::translate(marsMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = marsMVMatrix;
         marsMVMatrix = glm::scale(marsMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
@@ -375,6 +414,13 @@ struct MarsProgram : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On réinitialise l'array vao
         return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, glm::radians(180.f) + time, sattelites_rotation_axis);
+        MVMatrix = glm::translate(MVMatrix, sattelites_initial_position);
+        MVMatrix = glm::rotate(MVMatrix, glm::radians(180.f) - time, sattelites_rotation_axis);
+        return MVMatrix;
     }
 };
 
@@ -402,8 +448,8 @@ struct JupiterProgram : public AStellarObject {
             glUniform1i(AStellarObject::m_textures[i], i);
         }
 
-        glm::mat4 jupiterMVMatrix = globalMVMatrix * viewMatrix; // Translation
-        jupiterMVMatrix = glm::rotate(jupiterMVMatrix, time/2, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 jupiterMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
+        jupiterMVMatrix = glm::rotate(jupiterMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
         jupiterMVMatrix = glm::translate(jupiterMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = jupiterMVMatrix;
         jupiterMVMatrix = glm::scale(jupiterMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
@@ -426,6 +472,11 @@ struct JupiterProgram : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On réinitialise l'array vao
         return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, time, sattelites_rotation_axis);
+        return glm::translate(MVMatrix, sattelites_initial_position);
     }
 };
 
@@ -452,8 +503,8 @@ struct SaturneProgram : public AStellarObject {
             glUniform1i(AStellarObject::m_textures[i], i);
         }
 
-        glm::mat4 saturneMVMatrix = globalMVMatrix * viewMatrix; // Translation
-        saturneMVMatrix = glm::rotate(saturneMVMatrix, time/2, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 saturneMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
+        saturneMVMatrix = glm::rotate(saturneMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
         saturneMVMatrix = glm::translate(saturneMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = saturneMVMatrix;
         saturneMVMatrix = glm::scale(saturneMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
@@ -476,6 +527,11 @@ struct SaturneProgram : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On réinitialise l'array vao
         return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, time, sattelites_rotation_axis);
+        return glm::translate(MVMatrix, sattelites_initial_position);
     }
 };
 
@@ -502,8 +558,8 @@ struct UranusProgram : public AStellarObject {
             glUniform1i(AStellarObject::m_textures[i], i);
         }
 
-        glm::mat4 uranusMVMatrix = globalMVMatrix * viewMatrix; // Translation
-        uranusMVMatrix = glm::rotate(uranusMVMatrix, time/2, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 uranusMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
+        uranusMVMatrix = glm::rotate(uranusMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
         uranusMVMatrix = glm::translate(uranusMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = uranusMVMatrix;
         uranusMVMatrix = glm::scale(uranusMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
@@ -526,6 +582,13 @@ struct UranusProgram : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On réinitialise l'array vao
         return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, glm::radians(180.f) + time, sattelites_rotation_axis);
+        MVMatrix = glm::translate(MVMatrix, sattelites_initial_position);
+        MVMatrix = glm::rotate(MVMatrix, glm::radians(180.f) - time, sattelites_rotation_axis);
+        return MVMatrix;
     }
 };
 
@@ -552,8 +615,8 @@ struct NeptuneProgram : public AStellarObject {
             glUniform1i(AStellarObject::m_textures[i], i);
         }
 
-        glm::mat4 neptuneMVMatrix = globalMVMatrix * viewMatrix; // Translation
-        neptuneMVMatrix = glm::rotate(neptuneMVMatrix, time/2, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 neptuneMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
+        neptuneMVMatrix = glm::rotate(neptuneMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
         neptuneMVMatrix = glm::translate(neptuneMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = neptuneMVMatrix;
         neptuneMVMatrix = glm::scale(neptuneMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
@@ -576,6 +639,13 @@ struct NeptuneProgram : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On réinitialise l'array vao
         return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, glm::radians(180.f) + time, sattelites_rotation_axis);
+        MVMatrix = glm::translate(MVMatrix, sattelites_initial_position);
+        MVMatrix = glm::rotate(MVMatrix, glm::radians(180.f) - time, sattelites_rotation_axis);
+        return MVMatrix;
     }
 };
 
@@ -602,8 +672,8 @@ struct PlutonProgram : public AStellarObject {
             glUniform1i(AStellarObject::m_textures[i], i);
         }
 
-        glm::mat4 plutonMVMatrix = globalMVMatrix * viewMatrix; // Translation
-        plutonMVMatrix = glm::rotate(plutonMVMatrix, time/2, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 plutonMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
+        plutonMVMatrix = glm::rotate(plutonMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
         plutonMVMatrix = glm::translate(plutonMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = plutonMVMatrix;
         plutonMVMatrix = glm::scale(plutonMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
@@ -626,6 +696,13 @@ struct PlutonProgram : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On réinitialise l'array vao
         return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, glm::radians(180.f) + time, sattelites_rotation_axis);
+        MVMatrix = glm::translate(MVMatrix, sattelites_initial_position);
+        MVMatrix = glm::rotate(MVMatrix, glm::radians(180.f) - time, sattelites_rotation_axis);
+        return MVMatrix;
     }
 };
 
