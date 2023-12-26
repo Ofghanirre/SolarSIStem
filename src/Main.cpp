@@ -1,6 +1,5 @@
 #include <GL/glew.h>
 #include <iostream>
-#include <X11/Xlib.h>
 
 // GLIMAC 
 #include <glimac/SDLWindowManager.hpp>
@@ -40,13 +39,14 @@ int main(int argc, char** argv) {
     glActiveTexture(GL_TEXTURE0);
 
     // Loading & Compiling Textures
-    GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID, SUN_TEXTURE_ID, MERCURE_TEXTURE_ID, 
+    GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID, SUN_TEXTURE_ID, MERCURE_TEXTURE_ID, VENUS_TEXTURE_ID,
     MARS_TEXTURE_ID, JUPITER_TEXTURE_ID, SATURNE_TEXTURE_ID, URANUS_TEXTURE_ID, NEPTUNE_TEXTURE_ID, PLUTON_TEXTURE_ID;
-    EARTH_TEXTURE_ID = registerNewTexture("../assets/textures/EarthMap.jpg");
-    MOON_TEXTURE_ID = registerNewTexture("../assets/textures/MoonMap.jpg");
-    CLOUD_TEXTURE_ID = registerNewTexture("../assets/textures/CloudMap.jpg");
     SUN_TEXTURE_ID = registerNewTexture("../assets/textures/SunMap.jpg");
     MERCURE_TEXTURE_ID = registerNewTexture("../assets/textures/MercuryMap.jpg");
+    VENUS_TEXTURE_ID = registerNewTexture("../assets/textures/VenusMap.jpg");
+    EARTH_TEXTURE_ID = registerNewTexture("../assets/textures/EarthMap.jpg");
+    CLOUD_TEXTURE_ID = registerNewTexture("../assets/textures/CloudMap.jpg");
+    MOON_TEXTURE_ID = registerNewTexture("../assets/textures/MoonMap.jpg");
     MARS_TEXTURE_ID = registerNewTexture("../assets/textures/MarsMap.jpg");
     JUPITER_TEXTURE_ID = registerNewTexture("../assets/textures/JupiterMap.jpg");
     SATURNE_TEXTURE_ID = registerNewTexture("../assets/textures/SaturnMap.jpg");
@@ -57,17 +57,36 @@ int main(int argc, char** argv) {
 
     // Loading & Compiling Shaders
     FilePath applicationPath(argv[0]);
-    EarthProgram earthProgram(applicationPath);
-    MoonProgram moonProgram(applicationPath);
-    SunProgram sunProgram(applicationPath);
-    MercureProgram mercureProgram(applicationPath);
-    VenusProgram venusProgram(applicationPath);
-    MarsProgram marsProgram(applicationPath);
-    JupiterProgram jupiterProgram(applicationPath);
-    SaturneProgram saturneProgram(applicationPath);
-    UranusProgram uranusProgram(applicationPath);
-    NeptuneProgram neptuneProgram(applicationPath);
-    PlutonProgram plutonProgram(applicationPath);
+    Program program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/multiTex3D.fs.glsl"));
+
+    SunProgram sunProgram(program, {"uSunTexture"}, {SUN_TEXTURE_ID});
+    MercureProgram mercureProgram(program, {"uMercureTexture"}, {MERCURE_TEXTURE_ID});
+    
+    VenusProgram venusProgram(program, {"uVenusTexture"}, {VENUS_TEXTURE_ID});
+    EarthProgram earthProgram(program, {"uEarthTexture", "uCloudTexture"}, {EARTH_TEXTURE_ID, CLOUD_TEXTURE_ID});
+    MoonProgram moonProgram(program, {"uMoonTexture"}, {MOON_TEXTURE_ID});
+    MarsProgram marsProgram(program, {"uMarsTexture"}, {MARS_TEXTURE_ID});
+    JupiterProgram jupiterProgram(program, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID});
+    SaturneProgram saturneProgram(program, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID});
+    UranusProgram uranusProgram(program, {"uUranusTexture"}, {URANUS_TEXTURE_ID});
+    NeptuneProgram neptuneProgram(program, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID});
+    PlutonProgram plutonProgram(program, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID});
+    
+    std::cout << "done generate planet" << std::endl;
+
+    earthProgram.addSatelite(&moonProgram);
+
+    sunProgram.addSatelite(&mercureProgram);
+    sunProgram.addSatelite(&venusProgram);
+    sunProgram.addSatelite(&earthProgram);
+    sunProgram.addSatelite(&marsProgram);
+    sunProgram.addSatelite(&jupiterProgram);
+    sunProgram.addSatelite(&saturneProgram);
+    sunProgram.addSatelite(&uranusProgram);
+    sunProgram.addSatelite(&neptuneProgram);
+    sunProgram.addSatelite(&plutonProgram);
+
+    std::cout << "done link planet with satelite" << std::endl;
 
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
@@ -90,113 +109,33 @@ int main(int argc, char** argv) {
         glClearColor(0.0, 0.0, 0.1, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clears le buffer et le depth buffer
 
-        sunProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            SUN_TEXTURE_ID,
-            ctxt.vao, 
-            sphere
-        );
+        glm::mat4 tmpGlobalMVMatrix = sunProgram.getOnePosMatrix(ctxt.globalMVMatrix, 3, (move ? windowManager.getTime() : 0));
+        event.changeCenterCamera(tmpGlobalMVMatrix);
 
-        mercureProgram.draw(ctxt.globalMVMatrix, 
+        sunProgram.drawAll(ctxt.globalMVMatrix, 
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            MERCURE_TEXTURE_ID,
+            (move ? windowManager.getTime() : 0),
             ctxt.vao, 
             sphere
         );
-
-        venusProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            MERCURE_TEXTURE_ID,
-            ctxt.vao, 
-            sphere
-        );
+        //std::cout << ctxt.globalMVMatrix << std::endl;
         
-        glm::mat4 earthPos = earthProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            EARTH_TEXTURE_ID, 
-            CLOUD_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        moonProgram.draw(earthPos, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            ctxt.NormalMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            MOON_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        marsProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            MARS_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        jupiterProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            JUPITER_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        saturneProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            SATURNE_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        uranusProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            URANUS_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        neptuneProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            NEPTUNE_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
-        plutonProgram.draw(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0), 
-            PLUTON_TEXTURE_ID, 
-            ctxt.vao, 
-            sphere
-        );
-
         // Update the display
         windowManager.swapBuffers();
     }
     // Application free
     ctxt.free();
+    glDeleteTextures(1, &SUN_TEXTURE_ID);
+    glDeleteTextures(1, &MERCURE_TEXTURE_ID);
+    glDeleteTextures(1, &VENUS_TEXTURE_ID);
     glDeleteTextures(1, &EARTH_TEXTURE_ID);
     glDeleteTextures(1, &MOON_TEXTURE_ID);
+    glDeleteTextures(1, &MARS_TEXTURE_ID);
+    glDeleteTextures(1, &JUPITER_TEXTURE_ID);
+    glDeleteTextures(1, &SATURNE_TEXTURE_ID);
+    glDeleteTextures(1, &URANUS_TEXTURE_ID);
+    glDeleteTextures(1, &NEPTUNE_TEXTURE_ID);
+    glDeleteTextures(1, &PLUTON_TEXTURE_ID);
     return EXIT_SUCCESS;
 }
