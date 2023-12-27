@@ -117,9 +117,7 @@ int main(int argc, char** argv) {
             ctxt.ProjMatrix, 
             (move ? windowManager.getTime() : 0),
             ctxt.vao, 
-            sphere,
-glm::vec3(0, 0, 0),
-glm::vec3(0, 1, 0)
+            sphere
         );
         //std::cout << ctxt.globalMVMatrix << std::endl;
         

@@ -18,9 +18,9 @@ struct AStellarObject {
     std::vector<GLuint> m_texturesIds;
     std::vector<GLuint> ArchiveTextureName = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2};
     std::vector<AStellarObject*> m_satellites;
-    std::vector<glm::vec3> m_satellites_rotation_axis;
-    std::vector<glm::vec3> m_satellites_initial_position;
     float coef_diametre;
+    glm::vec3 rotation_axis;
+    glm::vec3 initial_position;
 
     AStellarObject(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, float coef_diametre) :
         m_Program{program}, m_textures{texturesIds}, coef_diametre{coef_diametre}
@@ -48,9 +48,9 @@ struct AStellarObject {
     
     
     void addSatelite(AStellarObject* satelite, glm::vec3 rotation_axis, glm::vec3 initial_position) {
+        satelite->initial_position = initial_position;
+        satelite->rotation_axis = rotation_axis;
         m_satellites.emplace_back(satelite);
-        m_satellites_initial_position.emplace_back(initial_position);
-        m_satellites_rotation_axis.emplace_back(rotation_axis);
     }
 
     
@@ -59,14 +59,11 @@ struct AStellarObject {
         glm::mat4 ProjMatrix, 
         float time,
         GLuint vao, 
-        Sphere sphere,
-        glm::vec3 initial_position,
-        glm::vec3 rotation_axis
+        Sphere sphere
     ) {
         glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, ProjMatrix, time, vao, sphere, initial_position, rotation_axis);
         for(uint i = 0; i < m_satellites.size(); i++){
-            m_satellites[i]->drawAll(matrixPos, viewMatrix, ProjMatrix, time, vao, sphere,
-                             m_satellites_initial_position[i], m_satellites_rotation_axis[i]);
+            m_satellites[i]->drawAll(matrixPos, viewMatrix, ProjMatrix, time, vao, sphere);
         }
     }
 
@@ -114,16 +111,12 @@ struct AStellarObject {
         glBindVertexArray(0); // On utilise l'array vao
         return MVMatrixPos;
     }
-};
 
-
-struct SunProgram : public AStellarObject{
-    SunProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
-    AStellarObject {program, textures_uniform_locations, texturesIds, 0.7}
-    {}
-
-    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
-        return globalMVMatrix;
+    virtual glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, glm::radians(180.f) + time, rotation_axis);
+        MVMatrix = glm::translate(MVMatrix, initial_position);
+        MVMatrix = glm::rotate(MVMatrix, glm::radians(180.f) - time, rotation_axis);
+        return MVMatrix;
     }
 
     glm::mat4 getOnePosMatrix(glm::mat4 globalMVMatrix, uint index, float time) {
@@ -132,6 +125,20 @@ struct SunProgram : public AStellarObject{
             return getPosMatrix(globalMVMatrix, time);
         }
         return m_satellites[index - 1]->getPosMatrix(globalMVMatrix, time);
+    }
+};
+
+
+struct SunProgram : public AStellarObject{
+    SunProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    AStellarObject {program, textures_uniform_locations, texturesIds, 0.7}
+    {
+        this->initial_position = glm::vec3(0, 0, 0);
+        this->rotation_axis = glm::vec3(0, 1, 0);
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) override {
+        return globalMVMatrix;
     }
 };
 
