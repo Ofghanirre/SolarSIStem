@@ -74,17 +74,17 @@ int main(int argc, char** argv) {
     
     std::cout << "done generate planet" << std::endl;
 
-    earthProgram.addSatelite(&moonProgram);
+    earthProgram.addSatelite(&moonProgram, glm::vec3(0,1,0),glm::vec3(moonProgram.dist_earth, 0, 0));
 
-    sunProgram.addSatelite(&mercureProgram);
-    sunProgram.addSatelite(&venusProgram);
-    sunProgram.addSatelite(&earthProgram);
-    sunProgram.addSatelite(&marsProgram);
-    sunProgram.addSatelite(&jupiterProgram);
-    sunProgram.addSatelite(&saturneProgram);
-    sunProgram.addSatelite(&uranusProgram);
-    sunProgram.addSatelite(&neptuneProgram);
-    sunProgram.addSatelite(&plutonProgram);
+    sunProgram.addSatelite(&mercureProgram, glm::vec3(0,1,0), glm::vec3(mercureProgram.dist_sol, 0, 0));
+    sunProgram.addSatelite(&venusProgram,   glm::vec3(0,1,0), glm::vec3(venusProgram.dist_sol, 0, 0));
+    sunProgram.addSatelite(&earthProgram,   glm::vec3(0,1,0), glm::vec3(earthProgram.dist_sol, 0, 0));
+    sunProgram.addSatelite(&marsProgram,    glm::vec3(0,1,0), glm::vec3(marsProgram.dist_sol, 0, 0));
+    sunProgram.addSatelite(&jupiterProgram, glm::vec3(0,1,0), glm::vec3(jupiterProgram.dist_sol, 0, 0));
+    sunProgram.addSatelite(&saturneProgram, glm::vec3(0,1,0), glm::vec3(saturneProgram.dist_sol, 0, 0));
+    sunProgram.addSatelite(&uranusProgram,  glm::vec3(0,1,0), glm::vec3(uranusProgram.dist_sol, 0, 0));
+    sunProgram.addSatelite(&neptuneProgram, glm::vec3(0,1,0), glm::vec3(neptuneProgram.dist_sol, 0, 0));
+    sunProgram.addSatelite(&plutonProgram,  glm::vec3(0,1,0), glm::vec3(plutonProgram.dist_sol, 0, 0));
 
     std::cout << "done link planet with satelite" << std::endl;
 
@@ -117,7 +117,9 @@ int main(int argc, char** argv) {
             ctxt.ProjMatrix, 
             (move ? windowManager.getTime() : 0),
             ctxt.vao, 
-            sphere
+            sphere,
+glm::vec3(0, 0, 0),
+glm::vec3(0, 1, 0)
         );
         //std::cout << ctxt.globalMVMatrix << std::endl;
         
