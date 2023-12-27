@@ -18,8 +18,8 @@ const GLuint VERTEX_ATTR_POSITION = 0;  // From shaders ./triangle.vs.glsl
 const GLuint VERTEX_ATTR_NORMAL = 1;  // From shaders ./triangle.vs.glsl
 const GLuint VERTEX_ATTR_TEXCOORDS = 2;  // From shaders ./triangle.vs.glsl
 
-#define WINDOW_WIDTH 1600
-#define WINDOW_HEIGHT 1000
+#define WINDOW_WIDTH 900
+#define WINDOW_HEIGHT 500
 
 #define SATTELITE_AMOUNT 1
 
