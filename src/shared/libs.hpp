@@ -6,5 +6,6 @@
 // Shaders inclusions
 #include <glimac/Program.hpp>
 #include <glimac/FilePath.hpp>
+#include <glimac/common.hpp>
 
 using namespace glimac;

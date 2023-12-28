@@ -3,11 +3,11 @@
 
 struct Vertex2DUV {
     glm::vec2 position;
-    glm::vec2 texture_coords;
+    glm::vec2 texCoords;
 
     Vertex2DUV() {}
 
-    Vertex2DUV(glm::vec2 position_, glm::vec2 texture_coords_): position(position_), texture_coords(texture_coords_) {}
+    Vertex2DUV(glm::vec2 position_, glm::vec2 texture_coords_): position(position_), texCoords(texture_coords_) {}
 };
 
 GLint checkValid(GLint input, const char* name) {
@@ -16,4 +16,5 @@ GLint checkValid(GLint input, const char* name) {
     }
     return input;
 }
+
 

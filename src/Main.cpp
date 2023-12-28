@@ -18,6 +18,7 @@ const GLuint VERTEX_ATTR_POSITION = 0;  // From shaders ./triangle.vs.glsl
 const GLuint VERTEX_ATTR_NORMAL = 1;  // From shaders ./triangle.vs.glsl
 const GLuint VERTEX_ATTR_TEXCOORDS = 2;  // From shaders ./triangle.vs.glsl
 
+
 #define WINDOW_WIDTH 1600
 #define WINDOW_HEIGHT 1000
 
@@ -36,11 +37,20 @@ int main(int argc, char** argv) {
     }
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLEW Version : " << glewGetString(GLEW_VERSION) << std::endl;
-    glActiveTexture(GL_TEXTURE0);
+
+
+    // Loading & Compiling Shaders
+    FilePath applicationPath(argv[0]);
+    Program program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/3D.fs.glsl"));
+    // use https://github.com/JoeyDeVries/LearnOpenGL/blob/master/src/4.advanced_opengl/6.1.cubemaps_skybox
+    Program skyBoxProgram(loadProgram(applicationPath.dirPath() + "shaders/skyBox.vs.glsl", applicationPath.dirPath() + "shaders/skyBox.fs.glsl"));
+    //glActiveTexture(GL_TEXTURE0);
+
 
     // Loading & Compiling Textures
     GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID, SUN_TEXTURE_ID, MERCURE_TEXTURE_ID, VENUS_TEXTURE_ID,
-    MARS_TEXTURE_ID, JUPITER_TEXTURE_ID, SATURNE_TEXTURE_ID, URANUS_TEXTURE_ID, NEPTUNE_TEXTURE_ID, PLUTON_TEXTURE_ID;
+    MARS_TEXTURE_ID, JUPITER_TEXTURE_ID, SATURNE_TEXTURE_ID, URANUS_TEXTURE_ID, NEPTUNE_TEXTURE_ID, PLUTON_TEXTURE_ID,
+    BACKGROUND_TEXTURE_ID;
     SUN_TEXTURE_ID = registerNewTexture("../assets/textures/SunMap.jpg");
     MERCURE_TEXTURE_ID = registerNewTexture("../assets/textures/MercuryMap.jpg");
     VENUS_TEXTURE_ID = registerNewTexture("../assets/textures/VenusMap.jpg");
@@ -53,24 +63,22 @@ int main(int argc, char** argv) {
     URANUS_TEXTURE_ID = registerNewTexture("../assets/textures/UranusMap.jpg");
     NEPTUNE_TEXTURE_ID = registerNewTexture("../assets/textures/NeptuneMap.jpg");
     PLUTON_TEXTURE_ID = registerNewTexture("../assets/textures/PlutoMap.jpg");
+    BACKGROUND_TEXTURE_ID = registerNewTexture("../assets/textures/Stars.png");
     std::cout << "done texture loading" << std::endl;
 
-    // Loading & Compiling Shaders
-    FilePath applicationPath(argv[0]);
-    Program program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/multiTex3D.fs.glsl"));
-
-    SunProgram sunProgram(program, {"uSunTexture"}, {SUN_TEXTURE_ID});
-    MercureProgram mercureProgram(program, {"uMercureTexture"}, {MERCURE_TEXTURE_ID});
+    SunProgram sunProgram(&program, {"uSunTexture"}, {BACKGROUND_TEXTURE_ID});
+    std::cout << program.getInfoLog() << std::endl;
+    MercureProgram mercureProgram(&program, {"uMercureTexture"}, {MERCURE_TEXTURE_ID});
     
-    VenusProgram venusProgram(program, {"uVenusTexture"}, {VENUS_TEXTURE_ID});
-    EarthProgram earthProgram(program, {"uEarthTexture", "uCloudTexture"}, {EARTH_TEXTURE_ID, CLOUD_TEXTURE_ID});
-    MoonProgram moonProgram(program, {"uMoonTexture"}, {MOON_TEXTURE_ID});
-    MarsProgram marsProgram(program, {"uMarsTexture"}, {MARS_TEXTURE_ID});
-    JupiterProgram jupiterProgram(program, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID});
-    SaturneProgram saturneProgram(program, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID});
-    UranusProgram uranusProgram(program, {"uUranusTexture"}, {URANUS_TEXTURE_ID});
-    NeptuneProgram neptuneProgram(program, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID});
-    PlutonProgram plutonProgram(program, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID});
+    VenusProgram venusProgram(&program, {"uVenusTexture"}, {VENUS_TEXTURE_ID});
+    EarthProgram earthProgram(&program, {"uEarthTexture", "uCloudTexture"}, {EARTH_TEXTURE_ID, CLOUD_TEXTURE_ID});
+    MoonProgram moonProgram(&program, {"uMoonTexture"}, {MOON_TEXTURE_ID});
+    MarsProgram marsProgram(&program, {"uMarsTexture"}, {MARS_TEXTURE_ID});
+    JupiterProgram jupiterProgram(&program, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID});
+    SaturneProgram saturneProgram(&program, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID});
+    UranusProgram uranusProgram(&program, {"uUranusTexture"}, {URANUS_TEXTURE_ID});
+    NeptuneProgram neptuneProgram(&program, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID});
+    PlutonProgram plutonProgram(&program, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID});
     
     std::cout << "done generate planet" << std::endl;
 
@@ -92,10 +100,12 @@ int main(int argc, char** argv) {
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
     Sphere sphere(1, 32, 16);
+    SkyBox sky(&skyBoxProgram);
     // ADDING DEPTH HANDLING
     glEnable(GL_DEPTH_TEST);
     Context ctxt(WINDOW_WIDTH, WINDOW_HEIGHT, sphere);
-
+    Context skyContext(WINDOW_WIDTH, WINDOW_HEIGHT, sky.skyboxVertices);
+    std::cout << "end context" << std::endl;
 
     // Application loop:
     bool done = false;
@@ -106,11 +116,8 @@ int main(int argc, char** argv) {
         done = event.exeEvent(cam_move);
 
         // Uniform matrix refreshing
-        glClearColor(0.0, 0.0, 0.1, 0.0);
+        glClearColor(0.0, 1.0, 1.0, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clears le buffer et le depth buffer
-
-        glm::mat4 tmpGlobalMVMatrix = sunProgram.getOnePosMatrix(ctxt.globalMVMatrix, 3, (move ? windowManager.getTime() : 0));
-        event.changeCenterCamera(tmpGlobalMVMatrix);
 
         sunProgram.drawAll(ctxt.globalMVMatrix, 
             event.getViewMatrix(), 
@@ -119,7 +126,12 @@ int main(int argc, char** argv) {
             ctxt.vao, 
             sphere
         );
-        //std::cout << ctxt.globalMVMatrix << std::endl;
+
+        sky.draw(ctxt.globalMVMatrix,
+            event.getViewMatrix(), 
+            skyContext.ProjMatrix, 
+            skyContext.vao
+        );
         
         // Update the display
         windowManager.swapBuffers();
@@ -137,5 +149,6 @@ int main(int argc, char** argv) {
     glDeleteTextures(1, &URANUS_TEXTURE_ID);
     glDeleteTextures(1, &NEPTUNE_TEXTURE_ID);
     glDeleteTextures(1, &PLUTON_TEXTURE_ID);
+    glDeleteTextures(1, &BACKGROUND_TEXTURE_ID);
     return EXIT_SUCCESS;
 }

@@ -3,12 +3,14 @@
 #include <glimac/Sphere.hpp>
 #include <iostream>
 #include <cassert>
+#include <unistd.h>
 
 using namespace glimac;
 
+const int SECOND = 1000000;
 
 struct AStellarObject {
-    Program &m_Program;
+    Program *m_Program;
 
     GLint m_uMVPMatrix;
     GLint m_uMVMatrix;
@@ -19,27 +21,30 @@ struct AStellarObject {
     std::vector<GLuint> ArchiveTextureName = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2};
     std::vector<AStellarObject*> m_satelites;
 
-    AStellarObject(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds) : 
-        m_Program{program}, m_textures{texturesIds}
+    AStellarObject(Program * program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds) : 
+        m_Program{program}
     {
         assert(textures_uniform_locations.size() < 3);
         assert(textures_uniform_locations.size() == texturesIds.size());
-        m_uMVPMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix"), "uMVPMatrix");
-        m_uMVMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVMatrix"), "uMVMatrix");
-        m_uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");
+        m_Program->use();
+        auto idProg = m_Program->getGLId();
+        m_uMVPMatrix = checkValid(glGetUniformLocation(idProg, "uMVPMatrix"), "uMVPMatrix");
+        m_uMVMatrix = checkValid(glGetUniformLocation(idProg, "uMVMatrix"), "uMVMatrix");
+        m_uNormalMatrix = checkValid(glGetUniformLocation(idProg, "uNormalMatrix"), "uNormalMatrix");
         for (uint i = 0; i < texturesIds.size(); i++){
             m_texturesIds.emplace_back(texturesIds[i]);
             m_texturesNames.emplace_back(textures_uniform_locations[i]);
-            m_textures.emplace_back(checkValid(glGetUniformLocation(m_Program.getGLId(), textures_uniform_locations[i]), textures_uniform_locations[i]));
+            m_textures.emplace_back(checkValid(glGetUniformLocation(idProg, textures_uniform_locations[i]), textures_uniform_locations[i]));
         }
     }
 
     void update() {
-        m_uMVPMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix"), "uMVPMatrix");
-        m_uMVMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVMatrix"), "uMVMatrix");
-        m_uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");
+        m_Program->use();
+        m_uMVPMatrix = checkValid(glGetUniformLocation(m_Program->getGLId(), "uMVPMatrix"), "uMVPMatrix");
+        m_uMVMatrix = checkValid(glGetUniformLocation(m_Program->getGLId(), "uMVMatrix"), "uMVMatrix");
+        m_uNormalMatrix = checkValid(glGetUniformLocation(m_Program->getGLId(), "uNormalMatrix"), "uNormalMatrix");
         for (auto textureName: m_texturesNames){
-            m_textures.emplace_back(checkValid(glGetUniformLocation(m_Program.getGLId(), textureName), textureName));
+            m_textures.emplace_back(checkValid(glGetUniformLocation(m_Program->getGLId(), textureName), textureName));
         }
     }
     
@@ -63,7 +68,7 @@ struct AStellarObject {
     }
 
     void use() {
-        m_Program.use();
+        m_Program->use();
     }
 
     virtual glm::mat4 draw(
@@ -90,7 +95,7 @@ struct SunProgram : public AStellarObject{
     float coef_diametre = 0.7;
     const float dist_sol = 0.0f;
 
-    SunProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    SunProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
@@ -141,7 +146,7 @@ struct MercureProgram : public AStellarObject {
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
-    MercureProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    MercureProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
@@ -199,7 +204,7 @@ struct VenusProgram : public AStellarObject {
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
-    VenusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    VenusProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
@@ -257,7 +262,7 @@ struct EarthProgram : public AStellarObject {
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
-    EarthProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    EarthProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
@@ -315,7 +320,7 @@ struct MoonProgram : public AStellarObject {
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_earth, 0, 0); //glm::sphericalRand(2.f);
 
-    MoonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    MoonProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
@@ -373,7 +378,7 @@ struct MarsProgram : public AStellarObject {
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0);
 
-    MarsProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    MarsProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
@@ -431,7 +436,7 @@ struct JupiterProgram : public AStellarObject {
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
-    JupiterProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    JupiterProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
@@ -486,7 +491,7 @@ struct SaturneProgram : public AStellarObject {
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
-    SaturneProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    SaturneProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
@@ -541,7 +546,7 @@ struct UranusProgram : public AStellarObject {
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
-    UranusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    UranusProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
@@ -598,7 +603,7 @@ struct NeptuneProgram : public AStellarObject {
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
-    NeptuneProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    NeptuneProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
@@ -655,7 +660,7 @@ struct PlutonProgram : public AStellarObject {
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
-    PlutonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
+    PlutonProgram(Program* program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
 
