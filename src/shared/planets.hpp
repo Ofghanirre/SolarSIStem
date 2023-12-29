@@ -61,9 +61,15 @@ struct AStellarObject {
         GLuint vao, 
         Sphere sphere
     ) {
+<<<<<<< Updated upstream
         glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, ProjMatrix, time, vao, sphere);
         for(uint i = 0; i < m_satellites.size(); i++){
             std::cout << "New sattelites" << std::endl;
+=======
+        std::cout << initial_position << std::endl;
+        glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, ProjMatrix, time, vao, sphere, initial_position, rotation_axis);
+        for(uint i = 0; i < m_satellites.size(); i++){            
+>>>>>>> Stashed changes
             m_satellites[i]->drawAll(matrixPos, viewMatrix, ProjMatrix, time, vao, sphere);
         }
     }
