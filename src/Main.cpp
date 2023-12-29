@@ -100,7 +100,11 @@ int main(int argc, char** argv) {
     // Application loop:
     bool done = false;
     bool cam_move = true;
-    bool move = true;
+    bool move = false;
+    bool reset = false;
+    double time = 0.f;
+    uint speed = 1;
+    uint focus = 0;
     while(!done) {
         // Event loop:
         done = event.exeEvent(cam_move);
@@ -108,14 +112,18 @@ int main(int argc, char** argv) {
         // Uniform matrix refreshing
         glClearColor(0.0, 0.0, 0.1, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clears le buffer et le depth buffer
+        move = event.getTimeRunning();
+        reset = event.getResetState();
+        focus = event.getFocus();
 
-        glm::mat4 tmpGlobalMVMatrix = sunProgram.getOnePosMatrix(ctxt.globalMVMatrix, 3, (move ? windowManager.getTime() : 0));
-        event.changeCenterCamera(tmpGlobalMVMatrix);
+        if (focus != 0){
+            event.changeCenterCamera(sunProgram.getOnePosMatrix(ctxt.globalMVMatrix, focus, time));
+        }
 
         sunProgram.drawAll(ctxt.globalMVMatrix, 
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0),
+            time,
             ctxt.vao, 
             sphere
         );
@@ -123,6 +131,13 @@ int main(int argc, char** argv) {
         
         // Update the display
         windowManager.swapBuffers();
+        if ( move ) { // si le systeme doit bouger
+            time += (1 * speed);
+        } else if ( reset ) { // si l'on remet le systeme dans sa position original
+            std::cout << "reset" << std::endl;
+            time = 0.0;
+            event.setResetFalse();
+        }
     }
     // Application free
     ctxt.free();

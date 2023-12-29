@@ -37,7 +37,7 @@ namespace glimac {
             }
 
             void changeCenterCamera(glm::mat4 PlanetPossition) {
-                //std::cout << PlanetPossition << std::endl;
+                std::cout << PlanetPossition << std::endl;
                 ViewMatrix = PlanetPossition;
             }
 

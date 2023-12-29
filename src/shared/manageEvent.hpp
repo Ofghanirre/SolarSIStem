@@ -49,6 +49,27 @@ public:
     void changeCenterCamera(glm::mat4 PlanetPossition) {
         m_view.changeCenterCamera(PlanetPossition);
     }
+
+    bool getTimeRunning() {
+        return startTime;
+    }
+
+    bool getResetState() {
+        return reset;
+    }
+
+    uint getFocus() {
+        return focus;
+    }
+
+    void setResetFalse() {
+        reset = false;
+    }
+
+    void setTimeFalse() {
+        startTime = false;
+    }
+
 private:
     void executeKey(SDLKey key, bool pres) {
         switch(key) {
@@ -63,9 +84,21 @@ private:
                 m_view.moveFront(0.1);
                 break;
             case SDLK_LEFT : //gauche
-                // change planet view
+                focus = (focus - 1) % 11;
+                break;
             case SDLK_RIGHT : //droite
-                // change planet view
+                focus = (focus + 1) % 11;
+                break;
+            case SDLK_s :
+                startTime = true;
+                break;
+            case SDLK_e :
+                startTime = false;
+                break;
+            case SDLK_r : 
+                reset = true;
+                startTime = false;
+                break;
             default : 
                 std::cout << "key :" << key << std::endl;
         };
@@ -97,4 +130,7 @@ private:
     bool m_mouse = false;
     int lastPosX = 0;
     int lastPosY = 0;
+    bool startTime = false;
+    bool reset = false;
+    uint focus = 0;
 };
