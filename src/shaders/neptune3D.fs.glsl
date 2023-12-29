@@ -6,6 +6,8 @@ in vec2 vTexCoords;
 
 out vec3 fFragColor;
 
+uniform sampler2D uNeptuneTexture;
+
 void main() {
-  fFragColor = normalize(vNormalVC);
+  fFragColor = texture(uNeptuneTexture, vTexCoords).rgb;
 };

@@ -14,15 +14,6 @@
 
 using namespace glimac;
 
-const GLuint VERTEX_ATTR_POSITION = 0;  // From shaders ./triangle.vs.glsl
-const GLuint VERTEX_ATTR_NORMAL = 1;  // From shaders ./triangle.vs.glsl
-const GLuint VERTEX_ATTR_TEXCOORDS = 2;  // From shaders ./triangle.vs.glsl
-
-#define WINDOW_WIDTH 1600
-#define WINDOW_HEIGHT 1000
-
-#define SATTELITE_AMOUNT 1
-
 int main(int argc, char** argv) {
     // Initialize SDL and open a window
     SDLWindowManager windowManager(WINDOW_WIDTH, WINDOW_HEIGHT, "GLImac");
@@ -57,20 +48,30 @@ int main(int argc, char** argv) {
 
     // Loading & Compiling Shaders
     FilePath applicationPath(argv[0]);
-    Program program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/multiTex3D.fs.glsl"));
+    Program programSun(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/sun3D.fs.glsl"));
+    Program programMercure(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/mercure3D.fs.glsl"));
+    Program programVenus(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/venus3D.fs.glsl"));
+    Program programEarth(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/earth3D.fs.glsl"));
+    Program programMoon(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/moon3D.fs.glsl"));
+    Program programMars(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/mars3D.fs.glsl"));
+    Program programJupiter(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/jupiter3D.fs.glsl"));
+    Program programSaturne(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/saturne3D.fs.glsl"));
+    Program programUranus(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/uranus3D.fs.glsl"));
+    Program programNeptune(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/neptune3D.fs.glsl"));
+    Program programPluton(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/pluton3D.fs.glsl"));
+    //Program programText(loadProgram(applicationPath.dirPath() + "shaders/text.vs.glsl", applicationPath.dirPath() + "shaders/text.fs.glsl"));
 
-    SunProgram sunProgram(program, {"uSunTexture"}, {SUN_TEXTURE_ID});
-    MercureProgram mercureProgram(program, {"uMercureTexture"}, {MERCURE_TEXTURE_ID});
-    
-    VenusProgram venusProgram(program, {"uVenusTexture"}, {VENUS_TEXTURE_ID});
-    EarthProgram earthProgram(program, {"uEarthTexture", "uCloudTexture"}, {EARTH_TEXTURE_ID, CLOUD_TEXTURE_ID});
-    MoonProgram moonProgram(program, {"uMoonTexture"}, {MOON_TEXTURE_ID});
-    MarsProgram marsProgram(program, {"uMarsTexture"}, {MARS_TEXTURE_ID});
-    JupiterProgram jupiterProgram(program, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID});
-    SaturneProgram saturneProgram(program, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID});
-    UranusProgram uranusProgram(program, {"uUranusTexture"}, {URANUS_TEXTURE_ID});
-    NeptuneProgram neptuneProgram(program, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID});
-    PlutonProgram plutonProgram(program, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID});
+    SunProgram sunProgram(programSun, {"uSunTexture"}, {SUN_TEXTURE_ID});
+    MercureProgram mercureProgram(programMercure, {"uMercureTexture"}, {MERCURE_TEXTURE_ID});
+    VenusProgram venusProgram(programVenus, {"uVenusTexture"}, {VENUS_TEXTURE_ID});
+    EarthProgram earthProgram(programEarth, {"uEarthTexture", "uCloudTexture"}, {EARTH_TEXTURE_ID, CLOUD_TEXTURE_ID});
+    MoonProgram moonProgram(programMoon, {"uMoonTexture"}, {MOON_TEXTURE_ID});
+    MarsProgram marsProgram(programMars, {"uMarsTexture"}, {MARS_TEXTURE_ID});
+    JupiterProgram jupiterProgram(programJupiter, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID});
+    SaturneProgram saturneProgram(programSaturne, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID});
+    UranusProgram uranusProgram(programUranus, {"uUranusTexture"}, {URANUS_TEXTURE_ID});
+    NeptuneProgram neptuneProgram(programNeptune, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID});
+    PlutonProgram plutonProgram(programPluton, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID});
     
     std::cout << "done generate planet" << std::endl;
 
@@ -100,7 +101,11 @@ int main(int argc, char** argv) {
     // Application loop:
     bool done = false;
     bool cam_move = true;
-    bool move = true;
+    bool move = false;
+    bool reset = false;
+    double time = 0.f;
+    uint speed = 1;
+    uint focus = 0;
     while(!done) {
         // Event loop:
         done = event.exeEvent(cam_move);
@@ -108,14 +113,18 @@ int main(int argc, char** argv) {
         // Uniform matrix refreshing
         glClearColor(0.0, 0.0, 0.1, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clears le buffer et le depth buffer
+        move = event.getTimeRunning();
+        reset = event.getResetState();
+        focus = event.getFocus();
 
-        glm::mat4 tmpGlobalMVMatrix = sunProgram.getOnePosMatrix(ctxt.globalMVMatrix, 3, (move ? windowManager.getTime() : 0));
-        event.changeCenterCamera(tmpGlobalMVMatrix);
+        if (focus != 0){
+            event.changeCenterCamera(sunProgram.getOnePosMatrix(ctxt.globalMVMatrix, focus, time));
+        }
 
         sunProgram.drawAll(ctxt.globalMVMatrix, 
             event.getViewMatrix(), 
             ctxt.ProjMatrix, 
-            (move ? windowManager.getTime() : 0),
+            time,
             ctxt.vao, 
             sphere
         );
@@ -123,6 +132,13 @@ int main(int argc, char** argv) {
         
         // Update the display
         windowManager.swapBuffers();
+        if ( move ) { // si le systeme doit bouger
+            time += (1 * speed);
+        } else if ( reset ) { // si l'on remet le systeme dans sa position original
+            std::cout << "reset" << std::endl;
+            time = 0.0;
+            event.setResetFalse();
+        }
     }
     // Application free
     ctxt.free();

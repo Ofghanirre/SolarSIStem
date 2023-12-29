@@ -2,11 +2,15 @@
 
 #include <glimac/Sphere.hpp>
 
+#define WINDOW_WIDTH 1600
+#define WINDOW_HEIGHT 1000
+
 struct Context
 {
-    const GLuint VERTEX_ATTR_POSITION = 0;  // From shaders ./triangle.vs.glsl
-    const GLuint VERTEX_ATTR_NORMAL = 1;  // From shaders ./triangle.vs.glsl
-    const GLuint VERTEX_ATTR_TEXCOORDS = 2;  // From shaders ./triangle.vs.glsl
+    const GLuint VERTEX_ATTR_POSITION = 0; 
+    const GLuint VERTEX_ATTR_NORMAL = 1; 
+    const GLuint VERTEX_ATTR_TEXCOORDS = 2; 
+    const GLuint VERTEX_ATTR = 3; 
 
     // Globals Matrix Initialisation
     glm::mat4 ProjMatrix;

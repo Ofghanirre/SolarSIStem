@@ -1,3 +1,5 @@
+#pragma once
+
 #include "libs.hpp"
 #include "utils.hpp"
 #include <glimac/Sphere.hpp>
@@ -24,6 +26,7 @@ struct AStellarObject {
     {
         assert(textures_uniform_locations.size() < 3);
         assert(textures_uniform_locations.size() == texturesIds.size());
+        m_Program.use();
         m_uMVPMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix"), "uMVPMatrix");
         m_uMVMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVMatrix"), "uMVMatrix");
         m_uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");
@@ -87,9 +90,10 @@ struct AStellarObject {
 
 
 struct SunProgram : public AStellarObject{
-    float coef_diametre = 0.7;
+    const float coef_diametre = 0.7;
     const float dist_sol = 0.0f;
-
+    const float orbitalPeriod = 0.0f;
+    const float dayLength = 0.0f;
     SunProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds): 
     AStellarObject {program, textures_uniform_locations, texturesIds}
     {}
@@ -108,7 +112,7 @@ struct SunProgram : public AStellarObject{
         }
 
         glm::mat4 MVMatrixPlanetView = globalMVMatrix * viewMatrix;
-        glm::mat4 sunMVMatrix = glm::rotate(MVMatrixPlanetView, time, glm::vec3(0, 1, 0));
+        glm::mat4 sunMVMatrix = glm::rotate(MVMatrixPlanetView, time / 100, glm::vec3(0, 1, 0));
         sunMVMatrix = glm::scale(sunMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre));
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(sunMVMatrix));
@@ -138,6 +142,8 @@ struct SunProgram : public AStellarObject{
 struct MercureProgram : public AStellarObject {
     const float coef_diametre = 0.02439;
     const float dist_sol = 2.06;
+    const float orbitalPeriod = 88.0f; // en jours
+    const float dayLength = 4222.6f / 24.f; // en jours
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
@@ -159,11 +165,11 @@ struct MercureProgram : public AStellarObject {
         }
 
         glm::mat4 MVMatrixPlanetView = globalMVMatrix;// * viewMatrix;
-        glm::mat4 mercureMVMatrix = glm::rotate(MVMatrixPlanetView, time, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 mercureMVMatrix = glm::rotate(MVMatrixPlanetView, time / orbitalPeriod, sattelites_rotation_axis); // Translation * Rotation
         mercureMVMatrix = glm::translate(mercureMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = mercureMVMatrix;
         mercureMVMatrix = glm::scale(mercureMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-        mercureMVMatrix = glm::rotate(mercureMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        mercureMVMatrix = glm::rotate(mercureMVMatrix, time / dayLength, sattelites_rotation_axis); // Translation * Rotation
 
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(mercureMVMatrix));
@@ -194,8 +200,10 @@ struct MercureProgram : public AStellarObject {
 
 
 struct VenusProgram : public AStellarObject {
-    float coef_diametre = 0.0605;
-    float dist_sol = 3.86;
+    const float coef_diametre = 0.0605;
+    const float dist_sol = 3.86;
+    const float orbitalPeriod = 224.7f; // en jours
+    const float dayLength = 2802.f / 24.f; // en jours
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
@@ -217,11 +225,11 @@ struct VenusProgram : public AStellarObject {
         }
 
         glm::mat4 MVMatrixPlanetView = globalMVMatrix;// * viewMatrix;
-        glm::mat4 venusMVMatrix = glm::rotate(MVMatrixPlanetView, time, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 venusMVMatrix = glm::rotate(MVMatrixPlanetView, time / orbitalPeriod, sattelites_rotation_axis); // Translation * Rotation
         venusMVMatrix = glm::translate(venusMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = venusMVMatrix;
         venusMVMatrix = glm::scale(venusMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-        venusMVMatrix = glm::rotate(venusMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        venusMVMatrix = glm::rotate(venusMVMatrix, time / dayLength, sattelites_rotation_axis); // Translation * Rotation
         
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(venusMVMatrix));
@@ -252,8 +260,10 @@ struct VenusProgram : public AStellarObject {
 
 
 struct EarthProgram : public AStellarObject {
-    float coef_diametre = 0.06376;
-    float dist_sol = 5.1675;
+    const float coef_diametre = 0.06376;
+    const float dist_sol = 5.1675;
+    const float orbitalPeriod = 365.2f; // en jour
+    const float dayLength = 24.f / 24.f; // en jour
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
@@ -275,11 +285,11 @@ struct EarthProgram : public AStellarObject {
         }
 
         glm::mat4 MVMatrixPlanetView = globalMVMatrix;// * viewMatrix;
-        glm::mat4 earthMVMatrix = glm::rotate(MVMatrixPlanetView, time, sattelites_rotation_axis); // Translation * Rotation
+        glm::mat4 earthMVMatrix = glm::rotate(MVMatrixPlanetView, time / orbitalPeriod, sattelites_rotation_axis); // Translation * Rotation
         earthMVMatrix = glm::translate(earthMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = earthMVMatrix;
         earthMVMatrix = glm::scale(earthMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-        earthMVMatrix = glm::rotate(earthMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        earthMVMatrix = glm::rotate(earthMVMatrix, time / dayLength, sattelites_rotation_axis); // Translation * Rotation
 
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(earthMVMatrix));
@@ -310,8 +320,10 @@ struct EarthProgram : public AStellarObject {
 
 
 struct MoonProgram : public AStellarObject {
-    float coef_diametre = 0.01737;
-    float dist_earth = 0.03918 + 0.0605;
+    const float coef_diametre = 0.01737;
+    const float dist_earth = 0.03918 + 0.0605;
+    const float orbitalPeriod = 27.3f; // en jours
+    const float dayLength = 708.7f / 24.f; // en jours
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_earth, 0, 0); //glm::sphericalRand(2.f);
 
@@ -333,11 +345,11 @@ struct MoonProgram : public AStellarObject {
         }
 
         glm::mat4 MVMatrixSattelite = globalMVMatrix;//* viewMatrix; // Translation
-        MVMatrixSattelite = glm::rotate(MVMatrixSattelite, time, sattelites_rotation_axis); // Translation * Rotation
+        MVMatrixSattelite = glm::rotate(MVMatrixSattelite, time / orbitalPeriod, sattelites_rotation_axis); // Translation * Rotation
         MVMatrixSattelite = glm::translate(MVMatrixSattelite, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = MVMatrixSattelite;
         MVMatrixSattelite = glm::scale(MVMatrixSattelite, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-        MVMatrixSattelite = glm::rotate(MVMatrixSattelite, time, sattelites_rotation_axis); // Translation * Rotation
+        MVMatrixSattelite = glm::rotate(MVMatrixSattelite, time / dayLength, sattelites_rotation_axis); // Translation * Rotation
         
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(MVMatrixSattelite));
@@ -368,8 +380,10 @@ struct MoonProgram : public AStellarObject {
 
 
 struct MarsProgram : public AStellarObject {
-    float coef_diametre = 0.0339;
-    float dist_sol = 8.14;
+    const float coef_diametre = 0.0339;
+    const float dist_sol = 8.14;
+    const float orbitalPeriod = 687.f;
+    const float dayLength = 24.7f / 24.f; // en jours
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0);
 
@@ -391,11 +405,11 @@ struct MarsProgram : public AStellarObject {
         }
 
         glm::mat4 marsMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
-        marsMVMatrix = glm::rotate(marsMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        marsMVMatrix = glm::rotate(marsMVMatrix, time / orbitalPeriod, sattelites_rotation_axis); // Translation * Rotation
         marsMVMatrix = glm::translate(marsMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = marsMVMatrix;
         marsMVMatrix = glm::scale(marsMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-        marsMVMatrix = glm::rotate(marsMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        marsMVMatrix = glm::rotate(marsMVMatrix, time / dayLength, sattelites_rotation_axis); // Translation * Rotation
         
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(marsMVMatrix));
@@ -426,8 +440,10 @@ struct MarsProgram : public AStellarObject {
 
 
 struct JupiterProgram : public AStellarObject {
-    float coef_diametre = 0.7149;
-    float dist_sol = 27.80;
+    const float coef_diametre = 0.7149;
+    const float dist_sol = 27.80;
+    const float orbitalPeriod = 4331.f;
+    const float dayLength = 9.9f / 24.f;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
@@ -449,11 +465,11 @@ struct JupiterProgram : public AStellarObject {
         }
 
         glm::mat4 jupiterMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
-        jupiterMVMatrix = glm::rotate(jupiterMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        jupiterMVMatrix = glm::rotate(jupiterMVMatrix, time / orbitalPeriod, sattelites_rotation_axis); // Translation * Rotation
         jupiterMVMatrix = glm::translate(jupiterMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = jupiterMVMatrix;
         jupiterMVMatrix = glm::scale(jupiterMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-        jupiterMVMatrix = glm::rotate(jupiterMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        jupiterMVMatrix = glm::rotate(jupiterMVMatrix, time / dayLength, sattelites_rotation_axis); // Translation * Rotation
         
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(jupiterMVMatrix));
@@ -481,8 +497,10 @@ struct JupiterProgram : public AStellarObject {
 };
 
 struct SaturneProgram : public AStellarObject {
-    float coef_diametre = 0.6026;
-    float dist_sol = 51.14;
+    const float coef_diametre = 0.6026;
+    const float dist_sol = 51.14;
+    const float orbitalPeriod = 10747.f;
+    const float dayLength = 10.7f / 24.f;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
@@ -504,11 +522,11 @@ struct SaturneProgram : public AStellarObject {
         }
 
         glm::mat4 saturneMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
-        saturneMVMatrix = glm::rotate(saturneMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        saturneMVMatrix = glm::rotate(saturneMVMatrix, time / orbitalPeriod, sattelites_rotation_axis); // Translation * Rotation
         saturneMVMatrix = glm::translate(saturneMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = saturneMVMatrix;
         saturneMVMatrix = glm::scale(saturneMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-        saturneMVMatrix = glm::rotate(saturneMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        saturneMVMatrix = glm::rotate(saturneMVMatrix, time / dayLength, sattelites_rotation_axis); // Translation * Rotation
         
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(saturneMVMatrix));
@@ -536,8 +554,10 @@ struct SaturneProgram : public AStellarObject {
 };
 
 struct UranusProgram : public AStellarObject {
-    float coef_diametre = 0.2555;
-    float dist_sol = 102.39;
+    const float coef_diametre = 0.2555;
+    const float dist_sol = 102.39;
+    const float orbitalPeriod = 30589.f;
+    const float dayLength = 17.2f / 24.f;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
@@ -559,11 +579,11 @@ struct UranusProgram : public AStellarObject {
         }
 
         glm::mat4 uranusMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
-        uranusMVMatrix = glm::rotate(uranusMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        uranusMVMatrix = glm::rotate(uranusMVMatrix, time / orbitalPeriod, sattelites_rotation_axis); // Translation * Rotation
         uranusMVMatrix = glm::translate(uranusMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = uranusMVMatrix;
         uranusMVMatrix = glm::scale(uranusMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-        uranusMVMatrix = glm::rotate(uranusMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        uranusMVMatrix = glm::rotate(uranusMVMatrix, time / dayLength, sattelites_rotation_axis); // Translation * Rotation
         
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(uranusMVMatrix));
@@ -593,8 +613,10 @@ struct UranusProgram : public AStellarObject {
 };
 
 struct NeptuneProgram : public AStellarObject {
-    float coef_diametre = 0.2476;
-    float dist_sol = 161.25;
+    const float coef_diametre = 0.2476;
+    const float dist_sol = 161.25;
+    const float orbitalPeriod = 59800.f;
+    const float dayLength = 16.1f / 24.f;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
@@ -616,11 +638,11 @@ struct NeptuneProgram : public AStellarObject {
         }
 
         glm::mat4 neptuneMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
-        neptuneMVMatrix = glm::rotate(neptuneMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        neptuneMVMatrix = glm::rotate(neptuneMVMatrix, time / orbitalPeriod, sattelites_rotation_axis); // Translation * Rotation
         neptuneMVMatrix = glm::translate(neptuneMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = neptuneMVMatrix;
         neptuneMVMatrix = glm::scale(neptuneMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-        neptuneMVMatrix = glm::rotate(neptuneMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        neptuneMVMatrix = glm::rotate(neptuneMVMatrix, time / dayLength, sattelites_rotation_axis); // Translation * Rotation
         
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(neptuneMVMatrix));
@@ -650,8 +672,10 @@ struct NeptuneProgram : public AStellarObject {
 };
 
 struct PlutonProgram : public AStellarObject {
-    float coef_diametre = 0.0118;
-    float dist_sol = 210.94;
+    const float coef_diametre = 0.0118;
+    const float dist_sol = 210.94;
+    const float orbitalPeriod = 90560.f;
+    const float dayLength = 153.3f / 24.f;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_sol, 0, 0); //glm::sphericalRand(2.f);
 
@@ -673,11 +697,11 @@ struct PlutonProgram : public AStellarObject {
         }
 
         glm::mat4 plutonMVMatrix = globalMVMatrix;// * viewMatrix; // Translation
-        plutonMVMatrix = glm::rotate(plutonMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        plutonMVMatrix = glm::rotate(plutonMVMatrix, time / orbitalPeriod, sattelites_rotation_axis); // Translation * Rotation
         plutonMVMatrix = glm::translate(plutonMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
         glm::mat4 MVMatrixPos = plutonMVMatrix;
         plutonMVMatrix = glm::scale(plutonMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre)); // Translation * Rotation * Translation * Scale
-        plutonMVMatrix = glm::rotate(plutonMVMatrix, time, sattelites_rotation_axis); // Translation * Rotation
+        plutonMVMatrix = glm::rotate(plutonMVMatrix, time / dayLength, sattelites_rotation_axis); // Translation * Rotation
         
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE, 
             glm::value_ptr(plutonMVMatrix));
