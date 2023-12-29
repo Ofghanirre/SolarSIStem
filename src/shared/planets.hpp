@@ -1,3 +1,5 @@
+#pragma once
+
 #include "libs.hpp"
 #include "utils.hpp"
 #include <glimac/Sphere.hpp>

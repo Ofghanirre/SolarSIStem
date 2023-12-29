@@ -14,15 +14,6 @@
 
 using namespace glimac;
 
-const GLuint VERTEX_ATTR_POSITION = 0;  // From shaders ./triangle.vs.glsl
-const GLuint VERTEX_ATTR_NORMAL = 1;  // From shaders ./triangle.vs.glsl
-const GLuint VERTEX_ATTR_TEXCOORDS = 2;  // From shaders ./triangle.vs.glsl
-
-#define WINDOW_WIDTH 1600
-#define WINDOW_HEIGHT 1000
-
-#define SATTELITE_AMOUNT 1
-
 int main(int argc, char** argv) {
     // Initialize SDL and open a window
     SDLWindowManager windowManager(WINDOW_WIDTH, WINDOW_HEIGHT, "GLImac");
@@ -68,6 +59,7 @@ int main(int argc, char** argv) {
     Program programUranus(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/uranus3D.fs.glsl"));
     Program programNeptune(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/neptune3D.fs.glsl"));
     Program programPluton(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/pluton3D.fs.glsl"));
+    //Program programText(loadProgram(applicationPath.dirPath() + "shaders/text.vs.glsl", applicationPath.dirPath() + "shaders/text.fs.glsl"));
 
     SunProgram sunProgram(programSun, {"uSunTexture"}, {SUN_TEXTURE_ID});
     MercureProgram mercureProgram(programMercure, {"uMercureTexture"}, {MERCURE_TEXTURE_ID});
