@@ -24,6 +24,7 @@ struct AStellarObject {
     {
         assert(textures_uniform_locations.size() < 3);
         assert(textures_uniform_locations.size() == texturesIds.size());
+        m_Program.use();
         m_uMVPMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix"), "uMVPMatrix");
         m_uMVMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVMatrix"), "uMVMatrix");
         m_uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");

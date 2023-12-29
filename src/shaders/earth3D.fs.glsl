@@ -11,5 +11,4 @@ uniform sampler2D uCloudTexture;
 
 void main() {
   fFragColor = texture(uEarthTexture, vTexCoords).rgb + texture(uCloudTexture, vTexCoords).rgb;
-  // fFragColor = vec3(vTexCoords,0.0);
 };
