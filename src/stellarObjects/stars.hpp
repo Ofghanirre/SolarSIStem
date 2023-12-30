@@ -7,8 +7,10 @@
 
 #include "includes.hpp"
 
+#define TIME_ROTATE_SUN 25
+
 struct SunProgram : public AStellarObject{
-    float coef_diametre = 0.7;
+    float coef_diametre = COEF_DIAMETRE_SUN;
     const float dist_sol = 0.0f;
 
     SunProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
@@ -29,7 +31,7 @@ struct SunProgram : public AStellarObject{
         }
 
         glm::mat4 MVMatrixPlanetView = globalMVMatrix * viewMatrix;
-        glm::mat4 sunMVMatrix = glm::rotate(MVMatrixPlanetView, time / 100, glm::vec3(0, 1, 0));
+        glm::mat4 sunMVMatrix = glm::rotate(MVMatrixPlanetView, time / TIME_ROTATE_SUN, glm::vec3(0, 1, 0));
         sunMVMatrix = glm::scale(sunMVMatrix, glm::vec3(coef_diametre, coef_diametre, coef_diametre));
         glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE,
                            glm::value_ptr(sunMVMatrix));

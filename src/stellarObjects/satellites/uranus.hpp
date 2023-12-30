@@ -8,7 +8,7 @@
 
 struct ArielProgram : public AStellarObject {
     const float coef_diametre = 0.0058;
-    const float dist_earth = 0.006817857143 + DISTANCE_SATELLITE;
+    const float dist_earth = 0.006817857143 + COEF_DIAMETRE_URANUS;
     const float orbitalPeriod = 27.3f; // en jours
     const float dayLength = 708.7f / 24.f; // en jours
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
@@ -67,7 +67,7 @@ struct ArielProgram : public AStellarObject {
 
 struct UmbrielProgram : public AStellarObject {
     const float coef_diametre = 0.005847;
-    const float dist_earth = 0.0095 + DISTANCE_SATELLITE;
+    const float dist_earth = 0.0095 + COEF_DIAMETRE_URANUS;
     const float orbitalPeriod = 27.3f; // en jours
     const float dayLength = 708.7f / 24.f; // en jours
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
@@ -126,7 +126,7 @@ struct UmbrielProgram : public AStellarObject {
 
 struct TitaniaProgram : public AStellarObject {
     const float coef_diametre = 0.007889;
-    const float dist_earth = 0.01558214286 + DISTANCE_SATELLITE;
+    const float dist_earth = 0.01558214286 + COEF_DIAMETRE_URANUS;
     const float orbitalPeriod = 27.3f; // en jours
     const float dayLength = 708.7f / 24.f; // en jours
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
@@ -185,7 +185,7 @@ struct TitaniaProgram : public AStellarObject {
 
 struct OberonProgram : public AStellarObject {
     const float coef_diametre = 0.007614;
-    const float dist_earth = 0.02083928571 + DISTANCE_SATELLITE;
+    const float dist_earth = 0.02083928571 + COEF_DIAMETRE_URANUS;
     const float orbitalPeriod = 27.3f; // en jours
     const float dayLength = 708.7f / 24.f; // en jours
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
@@ -244,7 +244,7 @@ struct OberonProgram : public AStellarObject {
 
 struct MirandaProgram : public AStellarObject {
     const float coef_diametre = 0.0024;
-    const float dist_earth = 0.004639285714 + DISTANCE_SATELLITE;
+    const float dist_earth = 0.004639285714 + COEF_DIAMETRE_URANUS;
     const float orbitalPeriod = 27.3f; // en jours
     const float dayLength = 708.7f / 24.f; // en jours
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);

@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
     sunProgram.addSatelite(&neptuneProgram);
     sunProgram.addSatelite(&plutonProgram);
 
-    std::cout << "done link planet with satelite" << std::endl;
+    std::cout << "done link planet with satelite " << COEF_DISTANCE_MERCURE << std::endl;
 
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
@@ -168,7 +168,7 @@ int main(int argc, char** argv) {
     bool move = false;
     bool reset = false;
     double time = 0.f;
-    uint speed = 1;
+    uint speed = 3;
     uint focus = 0;
     while(!done) {
         // Event loop:

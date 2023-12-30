@@ -9,7 +9,7 @@
 
 struct MimasProgram : public AStellarObject {
     float coef_diametre = 0.00208;
-    float dist_saturne = 0.006625714286 + DISTANCE_SATELLITE;
+    float dist_saturne = 0.006625714286 + COEF_DIAMETRE_SATURNE;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_saturne, 0, 0); //glm::sphericalRand(2.f);
 
@@ -67,7 +67,7 @@ struct MimasProgram : public AStellarObject {
 
 struct EnceladusProgram : public AStellarObject {
     float coef_diametre = 0.00257;
-    float dist_saturne = 0.008500714286 + DISTANCE_SATELLITE;
+    float dist_saturne = 0.008500714286 + COEF_DIAMETRE_SATURNE;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_saturne, 0, 0); //glm::sphericalRand(2.f);
 
@@ -124,7 +124,7 @@ struct EnceladusProgram : public AStellarObject {
 
 struct TethysProgram : public AStellarObject {
     float coef_diametre = 0.00538;
-    float dist_saturne = 0.01052357143 + DISTANCE_SATELLITE;
+    float dist_saturne = 0.01052357143 + COEF_DIAMETRE_SATURNE;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_saturne, 0, 0); //glm::sphericalRand(2.f);
 
@@ -181,7 +181,7 @@ struct TethysProgram : public AStellarObject {
 
 struct DioneProgram : public AStellarObject {
     float coef_diametre = 0.00563;
-    float dist_saturne = 0.01347857143 + DISTANCE_SATELLITE;
+    float dist_saturne = 0.01347857143 + COEF_DIAMETRE_SATURNE;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_saturne, 0, 0); //glm::sphericalRand(2.f);
 
@@ -238,7 +238,7 @@ struct DioneProgram : public AStellarObject {
 
 struct RheaProgram : public AStellarObject {
     float coef_diametre = 0.00765;
-    float dist_saturne = 0.01882285714 + DISTANCE_SATELLITE;
+    float dist_saturne = 0.01882285714 + COEF_DIAMETRE_SATURNE;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_saturne, 0, 0); //glm::sphericalRand(2.f);
 
@@ -295,7 +295,7 @@ struct RheaProgram : public AStellarObject {
 
 struct TitanProgram : public AStellarObject {
     float coef_diametre = 0.02575;
-    float dist_saturne = 0.04363821429 + DISTANCE_SATELLITE;
+    float dist_saturne = 0.04363821429 + COEF_DIAMETRE_SATURNE;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_saturne, 0, 0); //glm::sphericalRand(2.f);
 
@@ -352,7 +352,7 @@ struct TitanProgram : public AStellarObject {
 
 struct HyperionProgram : public AStellarObject {
     float coef_diametre = 0.0018;
-    float dist_saturne = 0.05360464286 + DISTANCE_SATELLITE;
+    float dist_saturne = 0.05360464286 + COEF_DIAMETRE_SATURNE;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_saturne, 0, 0); //glm::sphericalRand(2.f);
 
@@ -409,7 +409,7 @@ struct HyperionProgram : public AStellarObject {
 
 struct IapetusProgram : public AStellarObject {
     float coef_diametre = 0.00746;
-    float dist_saturne = 0.1271732143 + DISTANCE_SATELLITE;
+    float dist_saturne = 0.1271732143 + COEF_DIAMETRE_SATURNE;
     glm::vec3 sattelites_rotation_axis = glm::vec3(0, 1, 0); //glm::sphericalRand(1.f);
     glm::vec3 sattelites_initial_position = glm::vec3(dist_saturne, 0, 0); //glm::sphericalRand(2.f);
 
