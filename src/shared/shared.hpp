@@ -1,4 +1,4 @@
-#include "planets.hpp"
+#include "stellarObject.hpp"
 #include "shaders.hpp"
 #include "utils.hpp"
 #include "manageEvent.hpp"
