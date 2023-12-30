@@ -11,6 +11,7 @@
 #include <glimac/FilePath.hpp>
 
 #include "shared/shared.hpp"
+#include "stellarObjects/all.hpp"
 
 using namespace glimac;
 
@@ -31,7 +32,9 @@ int main(int argc, char** argv) {
 
     // Loading & Compiling Textures
     GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID, SUN_TEXTURE_ID, MERCURE_TEXTURE_ID, VENUS_TEXTURE_ID,
-    MARS_TEXTURE_ID, JUPITER_TEXTURE_ID, SATURNE_TEXTURE_ID, URANUS_TEXTURE_ID, NEPTUNE_TEXTURE_ID, PLUTON_TEXTURE_ID;
+    MARS_TEXTURE_ID, JUPITER_TEXTURE_ID, SATURNE_TEXTURE_ID, URANUS_TEXTURE_ID, NEPTUNE_TEXTURE_ID, PLUTON_TEXTURE_ID,
+    MARS_PHOBOS_ID, MARS_DEIMOS_ID,
+    DEFAULT_SATELLITE_TEXTURE_ID;
     SUN_TEXTURE_ID = registerNewTexture("../assets/textures/SunMap.jpg");
     MERCURE_TEXTURE_ID = registerNewTexture("../assets/textures/MercuryMap.jpg");
     VENUS_TEXTURE_ID = registerNewTexture("../assets/textures/VenusMap.jpg");
@@ -44,6 +47,9 @@ int main(int argc, char** argv) {
     URANUS_TEXTURE_ID = registerNewTexture("../assets/textures/UranusMap.jpg");
     NEPTUNE_TEXTURE_ID = registerNewTexture("../assets/textures/NeptuneMap.jpg");
     PLUTON_TEXTURE_ID = registerNewTexture("../assets/textures/PlutoMap.jpg");
+    MARS_PHOBOS_ID = registerNewTexture("../assets/textures/MarsPhobosMap.jpg");
+    MARS_DEIMOS_ID = registerNewTexture("../assets/textures/MarsDeimosMap.jpg");
+    DEFAULT_SATELLITE_TEXTURE_ID = registerNewTexture("../assets/textures/DefaultSatelliteMap.jpg");
     std::cout << "done texture loading" << std::endl;
 
     // Loading & Compiling Shaders
@@ -59,6 +65,8 @@ int main(int argc, char** argv) {
     Program programUranus(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/uranus3D.fs.glsl"));
     Program programNeptune(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/neptune3D.fs.glsl"));
     Program programPluton(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/pluton3D.fs.glsl"));
+    Program programSatellite(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/satellite3D.fs.glsl"));
+
     //Program programText(loadProgram(applicationPath.dirPath() + "shaders/text.vs.glsl", applicationPath.dirPath() + "shaders/text.fs.glsl"));
 
     SunProgram sunProgram(programSun, {"uSunTexture"}, {SUN_TEXTURE_ID});
@@ -72,10 +80,66 @@ int main(int argc, char** argv) {
     UranusProgram uranusProgram(programUranus, {"uUranusTexture"}, {URANUS_TEXTURE_ID});
     NeptuneProgram neptuneProgram(programNeptune, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID});
     PlutonProgram plutonProgram(programPluton, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID});
-    
+    // MARS SATELLITES
+    DeimosProgram demiosProgram(programSatellite, {"uSatelliteTexture"}, {MARS_DEIMOS_ID});
+    PhobosProgram phobosProgram(programSatellite, {"uSatelliteTexture"}, {MARS_PHOBOS_ID});
+    // JUPYTER SATELLITES
+    CallistoProgram callistoProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    GanymedeProgram ganymedeProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    EuropaProgram europaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    IOProgram ioProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    // SATURNE SATELLITES
+    MimasProgram mimasProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    EnceladusProgram enceladusProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    TethysProgram tethysProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    DioneProgram dioneProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    RheaProgram rheaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    TitanProgram titanProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    HyperionProgram hyperionProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    IapetusProgram iapetusProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    // URANUS SATELLITES
+    ArielProgram arielProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    UmbrielProgram umbrielProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    TitaniaProgram titaniaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    OberonProgram oberonProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    MirandaProgram mirandaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    // NEPTUNE SATELITTES
+    TritonProgram tritonProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    NereideProgram nereideProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    // PLUTON SATELITTES
+    CharonProgram charonProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+
     std::cout << "done generate planet" << std::endl;
 
     earthProgram.addSatelite(&moonProgram);
+
+    marsProgram.addSatelite(&demiosProgram);
+    marsProgram.addSatelite(&phobosProgram);
+
+    jupiterProgram.addSatelite(&callistoProgram);
+    jupiterProgram.addSatelite(&ganymedeProgram);
+    jupiterProgram.addSatelite(&europaProgram);
+    jupiterProgram.addSatelite(&ioProgram);
+
+    saturneProgram.addSatelite(&mimasProgram);
+    saturneProgram.addSatelite(&enceladusProgram);
+    saturneProgram.addSatelite(&tethysProgram);
+    saturneProgram.addSatelite(&dioneProgram);
+    saturneProgram.addSatelite(&rheaProgram);
+    saturneProgram.addSatelite(&titanProgram);
+    saturneProgram.addSatelite(&hyperionProgram);
+    saturneProgram.addSatelite(&iapetusProgram);
+
+    uranusProgram.addSatelite(&arielProgram);
+    uranusProgram.addSatelite(&umbrielProgram);
+    uranusProgram.addSatelite(&titaniaProgram);
+    uranusProgram.addSatelite(&oberonProgram);
+    uranusProgram.addSatelite(&mirandaProgram);
+
+    neptuneProgram.addSatelite(&tritonProgram);
+    neptuneProgram.addSatelite(&nereideProgram);
+
+    plutonProgram.addSatelite(&charonProgram);
 
     sunProgram.addSatelite(&mercureProgram);
     sunProgram.addSatelite(&venusProgram);
@@ -153,5 +217,8 @@ int main(int argc, char** argv) {
     glDeleteTextures(1, &URANUS_TEXTURE_ID);
     glDeleteTextures(1, &NEPTUNE_TEXTURE_ID);
     glDeleteTextures(1, &PLUTON_TEXTURE_ID);
+    glDeleteTextures(1, &MARS_DEIMOS_ID);
+    glDeleteTextures(1, &MARS_PHOBOS_ID);
+    glDeleteTextures(1, &DEFAULT_SATELLITE_TEXTURE_ID);
     return EXIT_SUCCESS;
 }
