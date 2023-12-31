@@ -106,7 +106,6 @@ struct PlanetObjects : public AStellarObject {
         m_coef_diametre{coef_diametre}, m_dist_sol{dist_sol}, m_orbitalPeriod{orbitalPeriod},
         m_dayLength{dayLength}, m_orbitalInclinaison{orbitalInclinaison}
     {
-        std::cout << " start : " << m_orbitalPeriod << " " << orbitalPeriod << std::endl;
         sattelites_initial_position = glm::vec3(m_dist_sol, 0, 0);
     }
 

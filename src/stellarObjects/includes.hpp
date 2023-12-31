@@ -1,7 +1,6 @@
 //
 // Created by Antonin Jean on 29/12/2023.
 //
-
 #pragma once
 
 #include "../shared/libs.hpp"
@@ -11,7 +10,7 @@
 #include <cassert>
 
 #define COEF_DIAMETRE 7
-#define COEF_DISTANCE 60
+#define COEF_DISTANCE 30
 #define DEFAULT_VALUE 1
 
 // diametre des planetes
