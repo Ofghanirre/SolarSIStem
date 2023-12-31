@@ -148,9 +148,11 @@ struct PlanetObjects : public AStellarObject {
     }
 
     glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
-        /*glm::mat4 MVMatrix = glm::rotate(globalMVMatrix, glm::radians(180.f) + time, glm::vec3(0, 1, 0));
-        MVMatrix = glm::translate(MVMatrix, sattelites_initial_position);
-        MVMatrix = glm::rotate(MVMatrix, glm::radians(180.f) - time, glm::vec3(0, 1, 0));*/
-        return globalMVMatrix;
+        glm::mat4 planetMVMatrix = glm::rotate(planetMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0));
+        planetMVMatrix =  glm::rotate(globalMVMatrix, glm::radians(180.f) + (time / m_orbitalPeriod), glm::vec3(0, 1, 0));
+        planetMVMatrix = glm::translate(planetMVMatrix, sattelites_initial_position);
+        planetMVMatrix = glm::rotate(planetMVMatrix, glm::radians(180.f) - (time / m_orbitalPeriod), glm::vec3(0, 1, 0));
+        planetMVMatrix = glm::rotate(planetMVMatrix, -glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0));
+        return planetMVMatrix;
     }
 };

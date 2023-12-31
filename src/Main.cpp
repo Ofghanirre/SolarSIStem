@@ -177,7 +177,7 @@ int main(int argc, char** argv) {
     bool cam_move = true;
     double time = 0.f;
     uint speed = 3;
-    uint focus = 0;
+    uint focus;
     update = true;
     while(!done) {
         // Event loop:
@@ -195,16 +195,25 @@ int main(int argc, char** argv) {
         }
 
         if (focus != 0){
-            event.changeCenterCamera(sunProgram.getOnePosMatrix(ctxt.globalMVMatrix, focus, time));
+            glm::mat4 tmp = sunProgram.getOnePosMatrix(ctxt.globalMVMatrix * event.getViewMatrix(), focus, time);
+            sunProgram.drawAll(tmp, 
+                glm::mat4(1.0f),
+                ctxt.ProjMatrix, 
+                time,
+                ctxt.vao, 
+                sphere
+            );
+        }else {
+            sunProgram.drawAll(ctxt.globalMVMatrix, 
+                event.getViewMatrix(), 
+                ctxt.ProjMatrix, 
+                time,
+                ctxt.vao, 
+                sphere
+            );
         }
 
-        sunProgram.drawAll(ctxt.globalMVMatrix, 
-            event.getViewMatrix(), 
-            ctxt.ProjMatrix, 
-            time,
-            ctxt.vao, 
-            sphere
-        );
+        
         
         // Update the display
         windowManager.swapBuffers();
