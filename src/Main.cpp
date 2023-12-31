@@ -21,7 +21,7 @@ void drawData(uint focus, uint speed, double time, bool profile) {
     std::cout << "focus : " << planetsName[focus] << std::endl
         << "speed : " << speed << std::endl
         << "days : " << time << std::endl
-        << "FOV : " << (focus == 0 ? ViewName[!profile] : "other")  << std::endl;
+        << "FOV : " << (focus == 0 ? ViewName[!profile] : ViewName[2])  << std::endl;
 }
 
 int main(int argc, char** argv) {

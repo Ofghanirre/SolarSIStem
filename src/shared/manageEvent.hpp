@@ -153,7 +153,7 @@ private:
     int lastPosY = 0;
     bool startTime = false;
     bool reset = false;
-    uint m_focus = 1;
+    uint m_focus = 0;
     bool m_isView = true;
     double time = 0.f;
     uint speed = 5;
