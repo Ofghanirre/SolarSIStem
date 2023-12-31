@@ -8,6 +8,7 @@
 #include <glimac/Sphere.hpp>
 #include <iostream>
 #include <cassert>
+#include <vector>
 
 #define COEF_DIAMETRE 7
 #define COEF_DISTANCE 30
@@ -178,3 +179,5 @@
 #define COEF_DISTANCE_NERIEDE (DISTANCE_NERIEDE / DISTANCE_SUN) / COEF_DISTANCE
 // pluton
 #define COEF_DISTANCE_CHARON (DISTANCE_CHARON / DISTANCE_SUN) / COEF_DISTANCE
+
+const std::vector<std::string> planetsName = {"SUN","MERCURE","VENUS","TERRE","MARS","JUPITER","SATURNE","URANUS","NEPTUNE","PLUTON"};

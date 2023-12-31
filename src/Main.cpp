@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <iostream>
+#include <stdlib.h>
 
 // GLIMAC 
 #include <glimac/SDLWindowManager.hpp>
@@ -15,10 +16,19 @@
 
 using namespace glimac;
 
+void drawData(uint focus, uint speed, double time, bool profile) {
+    system("clear");  
+    std::cout << "focus : " << planetsName[focus] << std::endl
+        << "speed : " << speed << std::endl
+        << "days : " << time << std::endl
+        << "FOV : " << (focus == 0 ? ViewName[!profile] : "other")  << std::endl;
+}
+
 int main(int argc, char** argv) {
     // Initialize SDL and open a window
+    bool update = false;
     SDLWindowManager windowManager(WINDOW_WIDTH, WINDOW_HEIGHT, "GLImac");
-    ManageEvent event(windowManager);
+    ManageEvent event(windowManager, &update);
 
     // Initialize glew for OpenGL3+ support
     GLenum glewInitError = glewInit();
@@ -151,7 +161,7 @@ int main(int argc, char** argv) {
     sunProgram.addSatelite(&neptuneProgram);
     sunProgram.addSatelite(&plutonProgram);
 
-    std::cout << "done link planet with satelite " << COEF_DISTANCE_MERCURE << std::endl;
+    std::cout << "done link planet with satelite " << std::endl;
 
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
@@ -165,11 +175,10 @@ int main(int argc, char** argv) {
     // Application loop:
     bool done = false;
     bool cam_move = true;
-    bool move = false;
-    bool reset = false;
     double time = 0.f;
     uint speed = 3;
     uint focus = 0;
+    update = true;
     while(!done) {
         // Event loop:
         done = event.exeEvent(cam_move);
@@ -177,9 +186,13 @@ int main(int argc, char** argv) {
         // Uniform matrix refreshing
         glClearColor(0.0, 0.0, 0.1, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clears le buffer et le depth buffer
-        move = event.getTimeRunning();
-        reset = event.getResetState();
+        time = event.getTime();
         focus = event.getFocus();
+
+        if(update){
+            drawData(focus, event.getSpeed(), time, event.getIsProfile());
+            update = false;
+        }
 
         if (focus != 0){
             event.changeCenterCamera(sunProgram.getOnePosMatrix(ctxt.globalMVMatrix, focus, time));
@@ -192,17 +205,9 @@ int main(int argc, char** argv) {
             ctxt.vao, 
             sphere
         );
-        //std::cout << ctxt.globalMVMatrix << std::endl;
         
         // Update the display
         windowManager.swapBuffers();
-        if ( move ) { // si le systeme doit bouger
-            time += (1 * speed);
-        } else if ( reset ) { // si l'on remet le systeme dans sa position original
-            std::cout << "reset" << std::endl;
-            time = 0.0;
-            event.setResetFalse();
-        }
     }
     // Application free
     ctxt.free();

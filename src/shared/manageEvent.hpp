@@ -4,17 +4,23 @@
 #include <glimac/SDLWindowManager.hpp>
 #include <SDL/SDL_events.h>
 
+const std::vector<std::string> ViewName = {"PROFILE","HAUT","TRACBALL", "FREEFLY"};
 
 class ManageEvent {
 public:
-    ManageEvent(glimac::SDLWindowManager &e) : m_event(e) {};
+    ManageEvent(glimac::SDLWindowManager &e, bool *upadte) : m_event(e), m_update{upadte} {};
 
     bool exeEvent(bool move)
     {
+        if(startTime) {
+            time += speed;
+            *m_update = true;
+        }
+        bool res = false;
         SDL_Event e;
         while(m_event.pollEvent(e)) {
             if(e.type == SDL_KEYDOWN && move) {
-                executeKey(e.key.keysym.sym, true);
+                res = executeKey(e.key.keysym.sym, true);
             }else if (e.type == SDL_KEYUP && move) {
                 m_pressed = false;
                 m_keyPressed = SDLK_LAST; 
@@ -25,7 +31,7 @@ public:
             }else if(e.type == SDL_MOUSEBUTTONUP) {
                 m_mouse = false;
             }else if(e.type == SDL_MOUSEMOTION && m_mouse && move) {
-                m_view.addRotateLeft(e.motion.y - lastPosY);
+                m_view.addRotateLeft(m_focus != 0 ? e.motion.y - lastPosY : 0);
                 m_view.addRotateUp(e.motion.x - lastPosX);
                 lastPosX = e.motion.x;
                 lastPosY = e.motion.y;
@@ -38,7 +44,7 @@ public:
         if(m_pressed) {
             executeKey(m_keyPressed, m_pressed);
         }
-        return false;
+        return res;
     }
 
     glm::mat4 getViewMatrix()
@@ -50,28 +56,24 @@ public:
         m_view.changeCenterCamera(PlanetPossition);
     }
 
-    bool getTimeRunning() {
-        return startTime;
-    }
-
-    bool getResetState() {
-        return reset;
+    double getTime() {
+        return time;
     }
 
     uint getFocus() {
-        return focus;
+        return m_focus;
     }
 
-    void setResetFalse() {
-        reset = false;
+    uint getSpeed() {
+        return speed;
     }
 
-    void setTimeFalse() {
-        startTime = false;
+    bool getIsProfile() {
+        return m_isView;
     }
 
 private:
-    void executeKey(SDLKey key, bool pres) {
+    bool executeKey(SDLKey key, bool pres) {
         switch(key) {
             case SDLK_UP : //haut
                 m_pressed = pres;
@@ -84,24 +86,43 @@ private:
                 m_view.moveFront(0.1);
                 break;
             case SDLK_LEFT : //gauche
-                focus = (focus - 1) % 11;
+                m_focus = (m_focus - 1) % 10;
+                *m_update = true;
                 break;
             case SDLK_RIGHT : //droite
-                focus = (focus + 1) % 11;
+                m_focus = (m_focus + 1) % 10;
+                *m_update = true;
                 break;
-            case SDLK_s :
+            case SDLK_s : // start time
                 startTime = true;
                 break;
-            case SDLK_e :
+            case SDLK_p : // pause time
                 startTime = false;
                 break;
-            case SDLK_r : 
-                reset = true;
+            case SDLK_c : // quit the program
+                return true;
+            case SDLK_r : // reset time
+                time = 0;
                 startTime = false;
+                *m_update = true;
+                break;
+            case SDLK_a : // advence time step by step
+                time += startTime ? 0 : speed;
+                *m_update = true;
+                break;
+            case SDLK_SPACE : // change FOV conter on sun
+                m_view.rotateLeft(m_isView ? 66.f : 0.f);
+                m_isView = !m_isView; 
+                *m_update = true;
+                break;
+            case SDLK_RETURN : // augment speed
+                speed = (speed % 50) + 5;
+                *m_update = true;
                 break;
             default : 
                 std::cout << "key :" << key << std::endl;
         };
+        return false;
     }
 
     void executeMouseKey(SDL_MouseMotionEvent mouse) {
@@ -132,5 +153,9 @@ private:
     int lastPosY = 0;
     bool startTime = false;
     bool reset = false;
-    uint focus = 0;
+    uint m_focus = 0;
+    bool m_isView = true;
+    double time = 0.f;
+    uint speed = 5;
+    bool *m_update;
 };

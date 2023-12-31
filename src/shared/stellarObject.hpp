@@ -144,7 +144,6 @@ struct PlanetObjects : public AStellarObject {
         glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
-        //std::cout << MVMatrixPos << std::endl;
         return MVMatrixPos;
     }
 
