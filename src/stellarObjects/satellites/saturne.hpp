@@ -8,8 +8,8 @@
 
 
 struct MimasProgram : public PlanetObjects {
-    MimasProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    MimasProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_MIMAS,
                 COEF_DISTANCE_MIMAS + COEF_DIAMETRE_SATURNE + COEF_DIAMETRE_MIMAS,
                 0.9424218f,
@@ -21,8 +21,8 @@ struct MimasProgram : public PlanetObjects {
 
 
 struct EnceladusProgram : public PlanetObjects {
-    EnceladusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    EnceladusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_ENCELADUS,
                 COEF_DISTANCE_ENCELADUS + COEF_DIAMETRE_SATURNE + COEF_DIAMETRE_ENCELADUS,
                 1.370218f,
@@ -33,8 +33,8 @@ struct EnceladusProgram : public PlanetObjects {
 };
 
 struct TethysProgram : public PlanetObjects {
-    TethysProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    TethysProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_TETHYS,
                 COEF_DISTANCE_TETHYS + COEF_DIAMETRE_SATURNE + COEF_DIAMETRE_TETHYS,
                 1.887802f,
@@ -45,8 +45,8 @@ struct TethysProgram : public PlanetObjects {
 };
 
 struct DioneProgram : public PlanetObjects {
-    DioneProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    DioneProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_DIONE,
                 COEF_DISTANCE_DIONE + COEF_DIAMETRE_SATURNE + COEF_DIAMETRE_DIONE,
                 2.736915f,
@@ -57,8 +57,8 @@ struct DioneProgram : public PlanetObjects {
 };
 
 struct RheaProgram : public PlanetObjects {
-    RheaProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    RheaProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_RHEA,
                 COEF_DISTANCE_RHEA + COEF_DIAMETRE_SATURNE + COEF_DIAMETRE_RHEA,
                 4.517500f,
@@ -69,8 +69,8 @@ struct RheaProgram : public PlanetObjects {
 };
 
 struct TitanProgram : public PlanetObjects {
-    TitanProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    TitanProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_TITAN,
                 COEF_DISTANCE_TITAN + COEF_DIAMETRE_SATURNE + COEF_DIAMETRE_TITAN,
                 15.945421f,
@@ -81,8 +81,8 @@ struct TitanProgram : public PlanetObjects {
 };
 
 struct HyperionProgram : public PlanetObjects {
-    HyperionProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    HyperionProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_HYPERION,
                 COEF_DISTANCE_HYPERION + COEF_DIAMETRE_SATURNE + COEF_DIAMETRE_HYPERION,
                 21.276609f,
@@ -93,8 +93,8 @@ struct HyperionProgram : public PlanetObjects {
 };
 
 struct IapetusProgram : public PlanetObjects {
-    IapetusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    IapetusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_IAPETUS,
                 COEF_DISTANCE_IAPETUS + COEF_DIAMETRE_SATURNE + COEF_DIAMETRE_IAPETUS,
                 79.330183f,

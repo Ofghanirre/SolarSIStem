@@ -6,8 +6,8 @@
 #include "../includes.hpp"
 
 struct ArielProgram : public PlanetObjects {
-    ArielProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    ArielProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
             COEF_DIAMETRE_ARIEL,
             COEF_DISTANCE_ARIEL + COEF_DIAMETRE_URANUS + COEF_DIAMETRE_ARIEL,
             2.520379f,
@@ -18,8 +18,8 @@ struct ArielProgram : public PlanetObjects {
 };
 
 struct UmbrielProgram : public PlanetObjects {
-    UmbrielProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    UmbrielProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
             COEF_DIAMETRE_UMBRIEL,
             COEF_DISTANCE_UMBRIEL + COEF_DIAMETRE_URANUS + COEF_DIAMETRE_UMBRIEL,
             4.144176f,
@@ -30,8 +30,8 @@ struct UmbrielProgram : public PlanetObjects {
 };
 
 struct TitaniaProgram : public PlanetObjects {
-    TitaniaProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    TitaniaProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
             COEF_DIAMETRE_TITANIA,
             COEF_DISTANCE_TITANIA + COEF_DIAMETRE_URANUS + COEF_DIAMETRE_TITANIA,
             8.705867f,
@@ -42,8 +42,8 @@ struct TitaniaProgram : public PlanetObjects {
 };
 
 struct OberonProgram : public PlanetObjects {
-    OberonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    OberonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
             COEF_DIAMETRE_OBERON,
             COEF_DISTANCE_OBERON + COEF_DIAMETRE_URANUS + COEF_DIAMETRE_OBERON,
             13.463234f,
@@ -54,8 +54,8 @@ struct OberonProgram : public PlanetObjects {
 };
 
 struct MirandaProgram : public PlanetObjects {
-    MirandaProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    MirandaProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
             COEF_DIAMETRE_MIRANDA,
             COEF_DISTANCE_MIRANDA + COEF_DIAMETRE_URANUS + COEF_DIAMETRE_MIRANDA,
             1.413479f,

@@ -8,8 +8,8 @@
 
 
 struct TritonProgram : public PlanetObjects {
-    TritonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    TritonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
             COEF_DIAMETRE_TRITON,
             COEF_DISTANCE_TRITON + COEF_DIAMETRE_NEPTUNE + COEF_DIAMETRE_TRITON,
             5.876f,
@@ -20,8 +20,8 @@ struct TritonProgram : public PlanetObjects {
 };
 
 struct NereideProgram : public PlanetObjects {
-    NereideProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    NereideProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
             COEF_DIAMETRE_NERIEDE,
             COEF_DISTANCE_NERIEDE + COEF_DIAMETRE_NEPTUNE + COEF_DIAMETRE_NERIEDE,
             360.13619, 

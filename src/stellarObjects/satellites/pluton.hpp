@@ -8,8 +8,8 @@
 
 
 struct CharonProgram : public PlanetObjects {
-    CharonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds,
+    CharonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
             COEF_DIAMETRE_CHARON,
             COEF_DISTANCE_CHARON + COEF_DIAMETRE_PLUTON + COEF_DIAMETRE_CHARON,
             6.3872f,

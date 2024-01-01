@@ -7,8 +7,8 @@
 
 
 struct MercureProgram : public PlanetObjects {
-    MercureProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds, 
+    MercureProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_MERCURE, //coef_diametre
                 COEF_DISTANCE_MERCURE + COEF_DIAMETRE_SUN, //dist_sol
                 88.0f, //orbitalPeriod
@@ -20,8 +20,8 @@ struct MercureProgram : public PlanetObjects {
 
 
 struct VenusProgram : public PlanetObjects {
-    VenusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds,
+    VenusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_VENUS, //coef_diametre
                 COEF_DISTANCE_VENUS + COEF_DIAMETRE_SUN, //dist_sol
                 224.7f, //orbitalPeriod
@@ -33,8 +33,8 @@ struct VenusProgram : public PlanetObjects {
 
 
 struct EarthProgram : public PlanetObjects {
-    EarthProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds,
+    EarthProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_TERRE, //coef_diametre
                 COEF_DISTANCE_TERRE + COEF_DIAMETRE_SUN, //dist_sol
                 365.2f, //orbitalPeriod
@@ -46,8 +46,8 @@ struct EarthProgram : public PlanetObjects {
 
 
 struct MarsProgram : public PlanetObjects {
-    MarsProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds,
+    MarsProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_MARS, //coef_diametre
                 COEF_DISTANCE_MARS + COEF_DIAMETRE_SUN, //dist_sol
                 687.f, //orbitalPeriod
@@ -59,8 +59,8 @@ struct MarsProgram : public PlanetObjects {
 
 
 struct JupiterProgram : public PlanetObjects {
-    JupiterProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds,
+    JupiterProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_JUPITER, //coef_diametre
                 COEF_DISTANCE_JUPITER + COEF_DIAMETRE_SUN, //dist_sol
                 4331.f, //orbitalPeriod
@@ -71,8 +71,8 @@ struct JupiterProgram : public PlanetObjects {
 };
 
 struct SaturneProgram : public PlanetObjects {
-    SaturneProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds,
+    SaturneProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_SATURNE, //coef_diametre
                 COEF_DISTANCE_SATURNE + COEF_DIAMETRE_SUN, //dist_sol
                 10747.f, //orbitalPeriod
@@ -83,8 +83,8 @@ struct SaturneProgram : public PlanetObjects {
 };
 
 struct UranusProgram : public PlanetObjects {
-    UranusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds,
+    UranusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_URANUS, //coef_diametre
                 COEF_DISTANCE_URANUS + COEF_DIAMETRE_SUN, //dist_sol
                 30589.f, //orbitalPeriod
@@ -95,8 +95,8 @@ struct UranusProgram : public PlanetObjects {
 };
 
 struct NeptuneProgram : public PlanetObjects {
-    NeptuneProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds,
+    NeptuneProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_NEPTUNE, //coef_diametre
                 COEF_DISTANCE_NEPTUNE + COEF_DIAMETRE_SUN, //dist_sol
                 59800.f, //orbitalPeriod
@@ -107,8 +107,8 @@ struct NeptuneProgram : public PlanetObjects {
 };
 
 struct PlutonProgram : public PlanetObjects {
-    PlutonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-            PlanetObjects {program, textures_uniform_locations, texturesIds,
+    PlutonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
                 COEF_DIAMETRE_PLUTON, //coef_diametre
                 COEF_DISTANCE_PLUTON + COEF_DIAMETRE_SUN, //dist_sol
                 90560.f, //orbitalPeriod

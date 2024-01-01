@@ -1,5 +1,7 @@
 #include "stellarObject.hpp"
 #include "shaders.hpp"
 #include "utils.hpp"
+#include "libs.hpp"
 #include "manageEvent.hpp"
 #include "context.hpp"
+#include "rings.hpp"

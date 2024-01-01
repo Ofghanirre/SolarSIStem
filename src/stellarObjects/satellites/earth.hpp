@@ -8,8 +8,8 @@
 
 
 struct MoonProgram : public PlanetObjects {
-    MoonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
-        PlanetObjects {program, textures_uniform_locations, texturesIds,
+    MoonProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
+        PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
             COEF_DIAMETRE_MOON,
             COEF_DISTANCE_MOON + COEF_DIAMETRE_TERRE + COEF_DIAMETRE_MOON,
             27.3f,
