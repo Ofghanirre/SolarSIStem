@@ -5,6 +5,7 @@
 // GLIMAC 
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/Sphere.hpp>
+#include <glimac/Circle.hpp>
 #include <glimac/Image.hpp>
 
 // Shaders inclusions
@@ -76,7 +77,7 @@ int main(int argc, char** argv) {
     Program programNeptune(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/neptune3D.fs.glsl"));
     Program programPluton(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/pluton3D.fs.glsl"));
     Program programSatellite(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/satellite3D.fs.glsl"));
-
+    Program programCircle(loadProgram(applicationPath.dirPath() + "shaders/circle.vs.glsl", applicationPath.dirPath() + "shaders/circle.fs.glsl"));
     //Program programText(loadProgram(applicationPath.dirPath() + "shaders/text.vs.glsl", applicationPath.dirPath() + "shaders/text.fs.glsl"));
 
     SunProgram sunProgram(programSun, {"uSunTexture"}, {SUN_TEXTURE_ID});
@@ -167,9 +168,11 @@ int main(int argc, char** argv) {
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
     Sphere sphere(1, 32, 16);
+    Circle circle(1, 32);
     // ADDING DEPTH HANDLING
     glEnable(GL_DEPTH_TEST);
-    Context ctxt(WINDOW_WIDTH, WINDOW_HEIGHT, sphere);
+    Context ctxtSphere(WINDOW_WIDTH, WINDOW_HEIGHT, &sphere);
+    Context ctxtCircle(WINDOW_WIDTH, WINDOW_HEIGHT, &circle);
 
 
     // Application loop:
@@ -195,31 +198,34 @@ int main(int argc, char** argv) {
         }
 
         if (focus != 0){
-            glm::mat4 tmp = sunProgram.getOnePosMatrix(ctxt.globalMVMatrix * event.getViewMatrix(), focus, time);
+            glm::mat4 tmp = sunProgram.getOnePosMatrix(ctxtSphere.globalMVMatrix * event.getViewMatrix(), focus, time);
             sunProgram.drawAll(tmp, 
                 glm::mat4(1.0f),
-                ctxt.ProjMatrix, 
+                //ctxtSphere.ProjMatrix, 
                 time,
-                ctxt.vao, 
-                sphere
+                //ctxtSphere.vao, 
+                //sphere
+                ctxtSphere,
+                ctxtCircle
             );
         }else {
-            sunProgram.drawAll(ctxt.globalMVMatrix, 
+            sunProgram.drawAll(ctxtSphere.globalMVMatrix, 
                 event.getViewMatrix(), 
-                ctxt.ProjMatrix, 
+                //ctxtSphere.ProjMatrix, 
                 time,
-                ctxt.vao, 
-                sphere
+                //ctxtSphere.vao, 
+                //sphere
+                ctxtSphere,
+                ctxtCircle
             );
         }
 
-        
-        
         // Update the display
         windowManager.swapBuffers();
     }
     // Application free
-    ctxt.free();
+    ctxtSphere.free();
+    ctxtCircle.free();
     glDeleteTextures(1, &SUN_TEXTURE_ID);
     glDeleteTextures(1, &MERCURE_TEXTURE_ID);
     glDeleteTextures(1, &VENUS_TEXTURE_ID);

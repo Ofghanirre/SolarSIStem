@@ -1,5 +1,6 @@
 #include "libs.hpp"
 #include "utils.hpp"
+#include "context.hpp"
 #include <glimac/Sphere.hpp>
 #include <iostream>
 #include <cassert>
@@ -51,14 +52,13 @@ struct AStellarObject {
     
     void drawAll(glm::mat4 globalMVMatrix, 
         glm::mat4 viewMatrix, 
-        glm::mat4 ProjMatrix, 
         float time,
-        GLuint vao, 
-        Sphere sphere
+        Context ctxtSphere,
+        Context ctxtCircle
     ) {
-        glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, ProjMatrix, time, vao, sphere);
+        glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, time, ctxtSphere, ctxtCircle);
         for(auto satelite : m_satelites){
-            satelite->drawAll(matrixPos, viewMatrix, ProjMatrix, time, vao, sphere);
+            satelite->drawAll(matrixPos, viewMatrix, time, ctxtSphere, ctxtCircle);
         }
     }
 
@@ -69,10 +69,10 @@ struct AStellarObject {
     virtual glm::mat4 draw(
         glm::mat4 globalMVMatrix, 
         glm::mat4 viewMatrix, 
-        glm::mat4 ProjMatrix, 
         float time, 
-        GLuint vao, 
-        Sphere sphere) = 0;
+        Context ctxtSphere,
+        Context ctxtCircle
+    ) = 0;
 
     virtual glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) = 0;
 
@@ -110,12 +110,12 @@ struct PlanetObjects : public AStellarObject {
     }
 
     glm::mat4 draw(
-            glm::mat4 globalMVMatrix,
-            glm::mat4 viewMatrix,
-            glm::mat4 ProjMatrix,
-            float time,
-            GLuint vao,
-            Sphere sphere) override
+        glm::mat4 globalMVMatrix,
+        glm::mat4 viewMatrix,
+        float time,
+        Context ctxtSphere,
+        Context ctxtCircle
+    ) override 
     {
         use();
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
@@ -133,15 +133,15 @@ struct PlanetObjects : public AStellarObject {
         glUniformMatrix4fv(AStellarObject::m_uNormalMatrix, 1, GL_FALSE,
                            glm::value_ptr(glm::transpose(glm::inverse(planetMVMatrix))));
         glUniformMatrix4fv(AStellarObject::m_uMVPMatrix, 1, GL_FALSE,
-                           glm::value_ptr(ProjMatrix * planetMVMatrix));
+                           glm::value_ptr(ctxtSphere.ProjMatrix * planetMVMatrix));
 
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
             glBindTexture(GL_TEXTURE_2D, AStellarObject::m_texturesIds[i]);
         }
 
-        glBindVertexArray(vao); // On utilise l'array vao
-        glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
+        glBindVertexArray(ctxtSphere.vao); // On utilise l'array vao
+        glDrawArrays(GL_TRIANGLES, 0, ctxtSphere.m_sphere->getVertexCount());
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
         return MVMatrixPos;
