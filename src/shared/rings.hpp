@@ -1,5 +1,8 @@
+#pragma once
+
 #include "libs.hpp"
 #include "utils.hpp"
+#include "context.hpp"
 #include <glimac/Circle.hpp>
 #include <iostream>
 #include <cassert>
@@ -32,26 +35,23 @@ struct RingsObject {
         m_Program.use();
     }
 
-    glm::mat4 draw(
+    void draw(
         glm::mat4 globalMVMatrix, 
-        glm::mat4 viewMatrix, 
-        glm::mat4 ProjMatrix, 
-        float time, 
-        GLuint vao, 
-        Circle circle
+        float size,
+        Context ctxtCircle
     ){
         use();
-        glm::mat4 planetMVMatrix = glm::scale(globalMVMatrix, glm::vec3(3, 3, 3)); // Translation * Rotation * Translation * Scale
+        glm::mat4 planetMVMatrix = glm::scale(globalMVMatrix, glm::vec3(size / 2, size / 2, size / 2)); // Translation * Rotation * Translation * Scale
 
         glUniformMatrix4fv(m_uMVMatrix, 1, GL_FALSE,
                            glm::value_ptr(planetMVMatrix));
         glUniformMatrix4fv(m_uNormalMatrix, 1, GL_FALSE,
                            glm::value_ptr(glm::transpose(glm::inverse(planetMVMatrix))));
         glUniformMatrix4fv(m_uMVPMatrix, 1, GL_FALSE,
-                           glm::value_ptr(ProjMatrix * planetMVMatrix));
+                           glm::value_ptr(ctxtCircle.ProjMatrix * planetMVMatrix));
 
-        glBindVertexArray(vao); // On utilise l'array vao
-        glDrawArrays(GL_LINES, 0, circle.getVertexCount());
+        glBindVertexArray(ctxtCircle.vao); // On utilise l'array vao
+        glDrawArrays(GL_LINES, 0, ctxtCircle.m_circle->getVertexCount());
         glBindVertexArray(0); // On utilise l'array vao
     }
 };

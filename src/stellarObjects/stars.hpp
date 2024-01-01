@@ -21,6 +21,7 @@ struct SunProgram : public AStellarObject{
         glm::mat4 globalMVMatrix,
         glm::mat4 viewMatrix,
         float time,
+        bool traj,
         Context ctxtSphere,
         Context ctxtCircle
     ) override

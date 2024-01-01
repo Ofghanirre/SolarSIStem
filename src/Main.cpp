@@ -17,12 +17,13 @@
 
 using namespace glimac;
 
-void drawData(uint focus, uint speed, double time, bool profile) {
+void drawData(uint focus, uint speed, double time, bool profile, bool traj) {
     system("clear");  
     std::cout << "focus : " << planetsName[focus] << std::endl
         << "speed : " << speed << std::endl
         << "days : " << time << std::endl
-        << "FOV : " << (focus == 0 ? ViewName[!profile] : ViewName[2])  << std::endl;
+        << "FOV : " << (focus == 0 ? ViewName[!profile] : ViewName[2]) << std::endl
+        << "Trajectoire : " << (traj ? "Oui" : "Non") << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -80,45 +81,47 @@ int main(int argc, char** argv) {
     Program programCircle(loadProgram(applicationPath.dirPath() + "shaders/circle.vs.glsl", applicationPath.dirPath() + "shaders/circle.fs.glsl"));
     //Program programText(loadProgram(applicationPath.dirPath() + "shaders/text.vs.glsl", applicationPath.dirPath() + "shaders/text.fs.glsl"));
 
+    RingsObject ringProgram(programCircle);
+
     SunProgram sunProgram(programSun, {"uSunTexture"}, {SUN_TEXTURE_ID});
-    MercureProgram mercureProgram(programMercure, {"uMercureTexture"}, {MERCURE_TEXTURE_ID});
-    VenusProgram venusProgram(programVenus, {"uVenusTexture"}, {VENUS_TEXTURE_ID});
-    EarthProgram earthProgram(programEarth, {"uEarthTexture", "uCloudTexture"}, {EARTH_TEXTURE_ID, CLOUD_TEXTURE_ID});
-    MoonProgram moonProgram(programMoon, {"uMoonTexture"}, {MOON_TEXTURE_ID});
-    MarsProgram marsProgram(programMars, {"uMarsTexture"}, {MARS_TEXTURE_ID});
-    JupiterProgram jupiterProgram(programJupiter, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID});
-    SaturneProgram saturneProgram(programSaturne, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID});
-    UranusProgram uranusProgram(programUranus, {"uUranusTexture"}, {URANUS_TEXTURE_ID});
-    NeptuneProgram neptuneProgram(programNeptune, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID});
-    PlutonProgram plutonProgram(programPluton, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID});
+    MercureProgram mercureProgram(programMercure, {"uMercureTexture"}, {MERCURE_TEXTURE_ID}, ringProgram);
+    VenusProgram venusProgram(programVenus, {"uVenusTexture"}, {VENUS_TEXTURE_ID}, ringProgram);
+    EarthProgram earthProgram(programEarth, {"uEarthTexture", "uCloudTexture"}, {EARTH_TEXTURE_ID, CLOUD_TEXTURE_ID}, ringProgram);
+    MoonProgram moonProgram(programMoon, {"uMoonTexture"}, {MOON_TEXTURE_ID}, ringProgram);
+    MarsProgram marsProgram(programMars, {"uMarsTexture"}, {MARS_TEXTURE_ID}, ringProgram);
+    JupiterProgram jupiterProgram(programJupiter, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID}, ringProgram);
+    SaturneProgram saturneProgram(programSaturne, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID}, ringProgram);
+    UranusProgram uranusProgram(programUranus, {"uUranusTexture"}, {URANUS_TEXTURE_ID}, ringProgram);
+    NeptuneProgram neptuneProgram(programNeptune, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID}, ringProgram);
+    PlutonProgram plutonProgram(programPluton, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID}, ringProgram);
     // MARS SATELLITES
-    DeimosProgram demiosProgram(programSatellite, {"uSatelliteTexture"}, {MARS_DEIMOS_ID});
-    PhobosProgram phobosProgram(programSatellite, {"uSatelliteTexture"}, {MARS_PHOBOS_ID});
+    DeimosProgram demiosProgram(programSatellite, {"uSatelliteTexture"}, {MARS_DEIMOS_ID}, ringProgram);
+    PhobosProgram phobosProgram(programSatellite, {"uSatelliteTexture"}, {MARS_PHOBOS_ID}, ringProgram);
     // JUPYTER SATELLITES
-    CallistoProgram callistoProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    GanymedeProgram ganymedeProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    EuropaProgram europaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    IOProgram ioProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    CallistoProgram callistoProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    GanymedeProgram ganymedeProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    EuropaProgram europaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    IOProgram ioProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
     // SATURNE SATELLITES
-    MimasProgram mimasProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    EnceladusProgram enceladusProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    TethysProgram tethysProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    DioneProgram dioneProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    RheaProgram rheaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    TitanProgram titanProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    HyperionProgram hyperionProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    IapetusProgram iapetusProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    MimasProgram mimasProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    EnceladusProgram enceladusProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    TethysProgram tethysProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    DioneProgram dioneProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    RheaProgram rheaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    TitanProgram titanProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    HyperionProgram hyperionProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    IapetusProgram iapetusProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
     // URANUS SATELLITES
-    ArielProgram arielProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    UmbrielProgram umbrielProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    TitaniaProgram titaniaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    OberonProgram oberonProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    MirandaProgram mirandaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    ArielProgram arielProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    UmbrielProgram umbrielProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    TitaniaProgram titaniaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    OberonProgram oberonProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    MirandaProgram mirandaProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
     // NEPTUNE SATELITTES
-    TritonProgram tritonProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
-    NereideProgram nereideProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    TritonProgram tritonProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
+    NereideProgram nereideProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
     // PLUTON SATELITTES
-    CharonProgram charonProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID});
+    CharonProgram charonProgram(programSatellite, {"uSatelliteTexture"}, {DEFAULT_SATELLITE_TEXTURE_ID}, ringProgram);
 
     std::cout << "done generate planet" << std::endl;
 
@@ -168,7 +171,7 @@ int main(int argc, char** argv) {
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
     Sphere sphere(1, 32, 16);
-    Circle circle(1, 32);
+    Circle circle(2, 42);
     // ADDING DEPTH HANDLING
     glEnable(GL_DEPTH_TEST);
     Context ctxtSphere(WINDOW_WIDTH, WINDOW_HEIGHT, &sphere);
@@ -193,7 +196,7 @@ int main(int argc, char** argv) {
         focus = event.getFocus();
 
         if(update){
-            drawData(focus, event.getSpeed(), time, event.getIsProfile());
+            drawData(focus, event.getSpeed(), time, event.getIsProfile(), event.getDrawTraj());
             update = false;
         }
 
@@ -201,20 +204,16 @@ int main(int argc, char** argv) {
             glm::mat4 tmp = sunProgram.getOnePosMatrix(ctxtSphere.globalMVMatrix * event.getViewMatrix(), focus, time);
             sunProgram.drawAll(tmp, 
                 glm::mat4(1.0f),
-                //ctxtSphere.ProjMatrix, 
                 time,
-                //ctxtSphere.vao, 
-                //sphere
+                event.getDrawTraj(),
                 ctxtSphere,
                 ctxtCircle
             );
         }else {
             sunProgram.drawAll(ctxtSphere.globalMVMatrix, 
                 event.getViewMatrix(), 
-                //ctxtSphere.ProjMatrix, 
                 time,
-                //ctxtSphere.vao, 
-                //sphere
+                event.getDrawTraj(),
                 ctxtSphere,
                 ctxtCircle
             );

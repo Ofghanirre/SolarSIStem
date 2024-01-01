@@ -18,16 +18,16 @@ void Circle::build(GLfloat r, GLsizei discLat) {
         vertex.texCoords.y = 0;
 
         vertex.normal.x = glm::cos(i);
-        vertex.normal.y = glm::sin(i);
-        vertex.normal.z = 0;
+        vertex.normal.y = 0;
+        vertex.normal.z = glm::sin(i);
         
         vertex.position = r * vertex.normal;
         
         m_Vertices.push_back(vertex);
 
         vertex.normal.x = glm::cos(i + part_angle);
-        vertex.normal.y = glm::sin(i + part_angle);
-        vertex.normal.z = 0;
+        vertex.normal.y = 0;
+        vertex.normal.z = glm::sin(i + part_angle);
         
         vertex.position = r * vertex.normal;
         

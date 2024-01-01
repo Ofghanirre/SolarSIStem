@@ -3,8 +3,7 @@
 //
 #pragma once
 
-#include "../shared/libs.hpp"
-#include "../shared/utils.hpp"
+#include "../shared/shared.hpp"
 #include <glimac/Sphere.hpp>
 #include <iostream>
 #include <cassert>

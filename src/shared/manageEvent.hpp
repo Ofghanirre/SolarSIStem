@@ -72,6 +72,10 @@ public:
         return m_isView;
     }
 
+    bool getDrawTraj() {
+        return m_drawTraj;
+    }
+
 private:
     bool executeKey(SDLKey key, bool pres) {
         switch(key) {
@@ -108,6 +112,10 @@ private:
                 break;
             case SDLK_a : // advence time step by step
                 time += startTime ? 0 : speed;
+                *m_update = true;
+                break;
+            case SDLK_t : // draw or disable traj
+                m_drawTraj = ! m_drawTraj;
                 *m_update = true;
                 break;
             case SDLK_SPACE : // change FOV conter on sun
@@ -158,4 +166,5 @@ private:
     double time = 0.f;
     uint speed = 5;
     bool *m_update;
+    bool m_drawTraj;
 };
