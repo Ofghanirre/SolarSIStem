@@ -54,7 +54,7 @@ struct AStellarObject {
 
     
     void drawAll(glm::mat4 globalMVMatrix, 
-        glm::mat4 viewMatrix, 
+        glm::mat4 viewMatrix,
         float time,
         bool traj,
         Context ctxtSphere,
@@ -72,7 +72,7 @@ struct AStellarObject {
 
     virtual glm::mat4 draw(
         glm::mat4 globalMVMatrix, 
-        glm::mat4 viewMatrix, 
+        glm::mat4 viewMatrix,
         float time, 
         bool traj,
         Context ctxtSphere,
@@ -110,8 +110,8 @@ struct PlanetObjects : public AStellarObject {
         float dayLength, 
         float orbitalInclinaison
         ): AStellarObject {program, textures_uniform_locations, texturesIds}, 
-        m_rings{ring}, m_coef_diametre{coef_diametre}, m_dist_sol{dist_sol}, 
-        m_orbitalPeriod{orbitalPeriod}, m_dayLength{dayLength}, 
+        m_rings{ring}, m_coef_diametre{coef_diametre}, m_dist_sol{dist_sol},
+        m_orbitalPeriod{orbitalPeriod}, m_dayLength{dayLength},
         m_orbitalInclinaison{orbitalInclinaison}
     {
         sattelites_initial_position = glm::vec3(m_dist_sol, 0, 0);
@@ -124,7 +124,7 @@ struct PlanetObjects : public AStellarObject {
         bool traj,
         Context ctxtSphere,
         Context ctxtCircle
-    ) override 
+    ) override
     {
         glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation
         if (traj) {
@@ -156,6 +156,89 @@ struct PlanetObjects : public AStellarObject {
         glDrawArrays(GL_TRIANGLES, 0, ctxtSphere.m_sphere->getVertexCount());
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
+        return MVMatrixPos;
+    }
+
+    glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
+        glm::mat4 planetMVMatrix = glm::rotate(planetMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0));
+        planetMVMatrix =  glm::rotate(globalMVMatrix, glm::radians(180.f) + (time / m_orbitalPeriod), glm::vec3(0, 1, 0));
+        planetMVMatrix = glm::translate(planetMVMatrix, sattelites_initial_position);
+        planetMVMatrix = glm::rotate(planetMVMatrix, glm::radians(180.f) - (time / m_orbitalPeriod), glm::vec3(0, 1, 0));
+        planetMVMatrix = glm::rotate(planetMVMatrix, -glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0));
+        return planetMVMatrix;
+    }
+};
+
+
+struct RingedPlanetObjects : public AStellarObject {
+    float m_coef_diametre;
+    float m_dist_sol;
+    float m_orbitalPeriod; // en jours
+    float m_dayLength; // en jours
+    float m_orbitalInclinaison;
+    float m_ring_radius;
+    glm::vec3 sattelites_initial_position;
+    RingsObject m_rings;
+
+    RingedPlanetObjects(Program& program,
+                  std::vector<const GLchar*> textures_uniform_locations,
+                  std::vector<GLuint> texturesIds,
+                  RingsObject ring,
+                  float coef_diametre,
+                  float dist_sol,
+                  float orbitalPeriod,
+                  float dayLength,
+                  float orbitalInclinaison,
+                  float ringRadius
+    ): AStellarObject {program, textures_uniform_locations, texturesIds},
+       m_rings{ring}, m_coef_diametre{coef_diametre}, m_dist_sol{dist_sol},
+       m_orbitalPeriod{orbitalPeriod}, m_dayLength{dayLength},
+       m_orbitalInclinaison{orbitalInclinaison}, m_ring_radius{ringRadius}
+    {
+        sattelites_initial_position = glm::vec3(m_dist_sol, 0, 0);
+    }
+
+    glm::mat4 draw(
+            glm::mat4 globalMVMatrix,
+            glm::mat4 viewMatrix,
+            float time,
+            bool traj,
+            Context ctxtSphere,
+            Context ctxtCircle
+    ) override
+    {
+        glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation
+        if (traj) {
+            m_rings.draw(planetMVMatrix, m_dist_sol, ctxtCircle);
+        }
+        use();
+        for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
+            glUniform1i(AStellarObject::m_textures[i], i);
+        }
+        planetMVMatrix = glm::rotate(planetMVMatrix, time / m_orbitalPeriod, glm::vec3(0, 1, 0)); // Translation * Rotation * Rotation
+        planetMVMatrix = glm::translate(planetMVMatrix, sattelites_initial_position); // Translation * Rotation * Translation
+        glm::mat4 MVMatrixPos = planetMVMatrix;
+        planetMVMatrix = glm::scale(planetMVMatrix, glm::vec3(m_coef_diametre, m_coef_diametre, m_coef_diametre)); // Translation * Rotation * Translation * Scale
+        planetMVMatrix = glm::rotate(planetMVMatrix, time / m_dayLength, glm::vec3(0, 1, 0)); // Translation * Rotation
+
+        glUniformMatrix4fv(AStellarObject::m_uMVMatrix, 1, GL_FALSE,
+                           glm::value_ptr(planetMVMatrix));
+        glUniformMatrix4fv(AStellarObject::m_uNormalMatrix, 1, GL_FALSE,
+                           glm::value_ptr(glm::transpose(glm::inverse(planetMVMatrix))));
+        glUniformMatrix4fv(AStellarObject::m_uMVPMatrix, 1, GL_FALSE,
+                           glm::value_ptr(ctxtSphere.ProjMatrix * planetMVMatrix));
+
+        for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
+            glActiveTexture(AStellarObject::ArchiveTextureName[i]);
+            glBindTexture(GL_TEXTURE_2D, AStellarObject::m_texturesIds[i]);
+        }
+
+        glBindVertexArray(ctxtSphere.vao); // On utilise l'array vao
+        glDrawArrays(GL_TRIANGLES, 0, ctxtSphere.m_sphere->getVertexCount());
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindVertexArray(0); // On utilise l'array vao
+
+        m_rings.draw(planetMVMatrix, m_coef_diametre + m_ring_radius, ctxtCircle);
         return MVMatrixPos;
     }
 
