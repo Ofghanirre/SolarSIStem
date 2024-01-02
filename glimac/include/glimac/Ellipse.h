@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "common.hpp"
+#include "Shape.hpp"
 
 namespace glimac {
 
@@ -14,8 +15,8 @@ namespace glimac {
 
     public:
         // Constructeur: alloue le tableau de données et construit les attributs des vertex
-        Ellipse(GLfloat radius, GLsizei discLat, GLsizei discLong):
-                m_nVertexCount(0) {
+        Ellipse(GLfloat radius, GLsizei discLat, GLsizei discLong)
+        {
             build(radius, discLat, discLong); // Construction (voir le .cpp)
         }
     };

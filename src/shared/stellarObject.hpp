@@ -56,8 +56,8 @@ struct AStellarObject {
         glm::mat4 viewMatrix,
         float time,
         bool traj,
-        Context ctxtSphere,
-        Context ctxtCircle
+        Context<Sphere> ctxtSphere,
+        Context<Circle> ctxtCircle
     ) {
         glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, time, traj, ctxtSphere, ctxtCircle);
         for(auto satelite : m_satelites){
@@ -74,8 +74,8 @@ struct AStellarObject {
         glm::mat4 viewMatrix,
         float time, 
         bool traj,
-        Context ctxtSphere,
-        Context ctxtCircle
+        Context<Sphere> ctxtSphere,
+        Context<Circle> ctxtCircle
     ) = 0;
 
     virtual glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) = 0;
@@ -148,8 +148,8 @@ struct PlanetObjects : public AStellarObject {
         glm::mat4 viewMatrix,
         float time,
         bool traj,
-        Context ctxtSphere,
-        Context ctxtCircle
+        Context<Sphere> ctxtSphere,
+        Context<Circle> ctxtCircle
     ) override
     {
         glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation
@@ -229,8 +229,8 @@ struct RingedPlanetObjects : public AStellarObject {
             glm::mat4 viewMatrix,
             float time,
             bool traj,
-            Context ctxtSphere,
-            Context ctxtCircle
+            Context<Sphere> ctxtSphere,
+            Context<Circle> ctxtCircle
     ) override
     {
         glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation

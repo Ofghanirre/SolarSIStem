@@ -27,7 +27,7 @@ namespace glimac {
             data.push_back(vertex);
         }
 
-        GLsize i;
+        GLsizei i;
         for (i = 0; i < (data.size() - 1); ++i) {
             m_Vertices.push_back(data[i]);
             m_Vertices.push_back(data[i + 1]);

@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "Shape.hpp"
+
 namespace glimac {
 
 // Représente une sphère discrétisée centrée en (0, 0, 0) (dans son repère local)
@@ -14,14 +16,9 @@ namespace glimac {
 
     public:
         // Constructeur: alloue le tableau de données et construit les attributs des vertex
-        Rectangle(GLfloat width, GLfloat height, GLfloat depth):
-                m_nVertexCount(0) {
+        Rectangle(GLfloat width, GLfloat height, GLfloat depth) {
             build(width, height, depth); // Construction (voir le .cpp)
         }
-
-    private:
-        std::vector<ShapeVertex> m_Vertices;
-        GLsizei m_nVertexCount; // Nombre de sommets
     };
 
 }

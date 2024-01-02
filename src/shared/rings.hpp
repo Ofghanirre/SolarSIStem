@@ -38,7 +38,7 @@ struct RingsObject {
     void draw(
         glm::mat4 globalMVMatrix, 
         float size,
-        Context ctxtCircle
+        Context<Circle> ctxtCircle
     ){
         use();
         glm::mat4 planetMVMatrix = glm::scale(globalMVMatrix, glm::vec3(size / 2, size / 2, size / 2)); // Translation * Rotation * Translation * Scale

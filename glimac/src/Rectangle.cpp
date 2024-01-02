@@ -6,7 +6,7 @@
 
 namespace glimac {
 
-void Rectangle::build(GLfloat width, GLfloat height, Glfloat depth) {
+void Rectangle::build(GLfloat width, GLfloat height, GLfloat depth) {
     std::vector<ShapeVertex> data;
     GLfloat mwidth = width/2;
     GLfloat mheight = height/2;
