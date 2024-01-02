@@ -14,6 +14,7 @@
 
 #include "shared/shared.hpp"
 #include "stellarObjects/all.hpp"
+#include "glimac/Ring.hpp"
 
 using namespace glimac;
 
@@ -172,10 +173,12 @@ int main(int argc, char** argv) {
      *********************************/
     Sphere sphere(1, 32, 16);
     Circle circle(2, 42);
+    Ring ring(10, 8, 42);
     // ADDING DEPTH HANDLING
     glEnable(GL_DEPTH_TEST);
-    Context ctxtSphere(WINDOW_WIDTH, WINDOW_HEIGHT, &sphere);
-    Context ctxtCircle(WINDOW_WIDTH, WINDOW_HEIGHT, &circle);
+    Context<Sphere> ctxtSphere(WINDOW_WIDTH, WINDOW_HEIGHT, &sphere);
+    Context<Circle> ctxtCircle(WINDOW_WIDTH, WINDOW_HEIGHT, &circle);
+    Context<Ring> ctxtRing(WINDOW_WIDTH, WINDOW_HEIGHT, &ring);
 
 
     // Application loop:
