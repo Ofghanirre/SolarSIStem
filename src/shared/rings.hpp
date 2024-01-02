@@ -51,7 +51,7 @@ struct RingsObject {
                            glm::value_ptr(ctxtCircle.ProjMatrix * planetMVMatrix));
 
         glBindVertexArray(ctxtCircle.vao); // On utilise l'array vao
-        glDrawArrays(GL_LINES, 0, ctxtCircle.m_circle->getVertexCount());
+        glDrawArrays(GL_LINES, 0, ctxtCircle.m_shape->getVertexCount());
         glBindVertexArray(0); // On utilise l'array vao
     }
 };

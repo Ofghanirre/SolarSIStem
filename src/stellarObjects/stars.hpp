@@ -47,7 +47,7 @@ struct SunProgram : public AStellarObject{
         }
 
         glBindVertexArray(ctxtSphere.vao); // On utilise l'array vao
-        glDrawArrays(GL_TRIANGLES, 0, ctxtSphere.m_sphere->getVertexCount());
+        glDrawArrays(GL_TRIANGLES, 0, ctxtSphere.m_shape->getVertexCount());
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
 

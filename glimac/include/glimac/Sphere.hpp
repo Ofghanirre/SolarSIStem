@@ -15,14 +15,9 @@ class Sphere : public Shape {
 
 public:
     // Constructeur: alloue le tableau de données et construit les attributs des vertex
-    Sphere(GLfloat radius, GLsizei discLat, GLsizei discLong):
-        m_nVertexCount(0) {
+    Sphere(GLfloat radius, GLsizei discLat, GLsizei discLong) {
         build(radius, discLat, discLong); // Construction (voir le .cpp)
     }
-
-private:
-    std::vector<ShapeVertex> m_Vertices;
-    GLsizei m_nVertexCount; // Nombre de sommets
 };
     
 }
