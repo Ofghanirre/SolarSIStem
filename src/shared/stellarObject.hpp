@@ -92,14 +92,14 @@ struct AStellarObject {
 
 struct PlanetObjects : public AStellarObject {
     float m_coef_diametre;
-    float m_dist_sol;
+    //float m_dist_sol;
     float m_orbitalPeriod; // en jours
     float m_dayLength; // en jours
     float m_orbitalInclinaison;
     float m_aphelion;
     float m_perihelion;
     float m_nominateur;
-    glm::vec3 sattelites_initial_position; 
+    //glm::vec3 sattelites_initial_position; 
     RingsObject m_rings;
 
     PlanetObjects(Program& program, 
@@ -107,18 +107,19 @@ struct PlanetObjects : public AStellarObject {
         std::vector<GLuint> texturesIds,
         RingsObject ring,
         float coef_diametre,
-        float dist_sol,
+        //float dist_sol,
+        float perihelion, 
+        float aphelion,
         float orbitalPeriod, 
         float dayLength, 
         float orbitalInclinaison
         ): AStellarObject {program, textures_uniform_locations, texturesIds}, 
-        m_rings{ring}, m_coef_diametre{coef_diametre}, m_dist_sol{dist_sol},
+        m_rings{ring}, m_coef_diametre{coef_diametre}, //m_dist_sol{dist_sol},
+        m_aphelion{aphelion}, m_perihelion{perihelion},
         m_orbitalPeriod{orbitalPeriod}, m_dayLength{dayLength},
         m_orbitalInclinaison{orbitalInclinaison}
     {
-        sattelites_initial_position = glm::vec3(m_dist_sol, 0, 0);
-        m_aphelion = dist_sol;
-        m_perihelion = dist_sol;
+        //sattelites_initial_position = glm::vec3(m_dist_sol, 0, 0);
         m_nominateur = m_aphelion * m_aphelion * m_perihelion * m_perihelion;
     }
 
@@ -139,9 +140,9 @@ struct PlanetObjects : public AStellarObject {
         return glm::vec3(glm::sqrt(m_nominateur / denominateur), 0, 0);
     }
 
-    glm::vec3 getDistForAngleCircle(float angle) {
+    /*glm::vec3 getDistForAngleCircle(float angle) {
         return sattelites_initial_position;
-    }
+    }*/
 
     glm::mat4 draw(
         glm::mat4 globalMVMatrix,
@@ -154,7 +155,7 @@ struct PlanetObjects : public AStellarObject {
     {
         glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation
         if (traj) {
-            m_rings.draw(planetMVMatrix, m_dist_sol, ctxtCircle);
+            m_rings.draw(planetMVMatrix, m_aphelion, ctxtCircle);
         }
         use();
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
@@ -188,7 +189,7 @@ struct PlanetObjects : public AStellarObject {
     glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) {
         glm::mat4 planetMVMatrix = glm::rotate(planetMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0));
         planetMVMatrix =  glm::rotate(globalMVMatrix, glm::radians(180.f) + (time / m_orbitalPeriod), glm::vec3(0, 1, 0));
-        planetMVMatrix = glm::translate(planetMVMatrix, sattelites_initial_position);
+        planetMVMatrix = glm::translate(planetMVMatrix, getDistForAngleElipse(time / m_orbitalPeriod));
         planetMVMatrix = glm::rotate(planetMVMatrix, glm::radians(180.f) - (time / m_orbitalPeriod), glm::vec3(0, 1, 0));
         planetMVMatrix = glm::rotate(planetMVMatrix, -glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0));
         return planetMVMatrix;
