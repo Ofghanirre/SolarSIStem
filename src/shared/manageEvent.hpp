@@ -90,7 +90,7 @@ private:
                 m_view.moveFront(0.1);
                 break;
             case SDLK_LEFT : //gauche
-                m_focus = (m_focus - 1) % 10;
+                m_focus = m_focus == 0 ? 9 : (m_focus - 1) % 10;
                 *m_update = true;
                 break;
             case SDLK_RIGHT : //droite
