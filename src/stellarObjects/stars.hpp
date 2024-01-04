@@ -22,8 +22,7 @@ struct SunProgram : public AStellarObject{
         glm::mat4 viewMatrix,
         float time,
         bool traj,
-        Context<Sphere> ctxtSphere,
-        Context<Circle> ctxtCircle
+        GeometricalContext context
     ) override
     {
         use();
@@ -39,15 +38,15 @@ struct SunProgram : public AStellarObject{
         glUniformMatrix4fv(AStellarObject::m_uNormalMatrix, 1, GL_FALSE,
                            glm::value_ptr(glm::transpose(glm::inverse(sunMVMatrix))));
         glUniformMatrix4fv(AStellarObject::m_uMVPMatrix, 1, GL_FALSE,
-                           glm::value_ptr(ctxtSphere.ProjMatrix * sunMVMatrix));
+                           glm::value_ptr(context.ctxtSphere.ProjMatrix * sunMVMatrix));
 
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
             glBindTexture(GL_TEXTURE_2D, AStellarObject::m_texturesIds[i]);
         }
 
-        glBindVertexArray(ctxtSphere.vao); // On utilise l'array vao
-        glDrawArrays(GL_TRIANGLES, 0, ctxtSphere.m_shape->getVertexCount());
+        glBindVertexArray(context.ctxtSphere.vao); // On utilise l'array vao
+        glDrawArrays(GL_TRIANGLES, 0, context.ctxtSphere.m_shape->getVertexCount());
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
 

@@ -1,5 +1,10 @@
 #pragma once
 #include "libs.hpp"
+#include "context.hpp"
+#include <glimac/Sphere.hpp>
+#include <glimac/Circle.hpp>
+#include <glimac/Ring.hpp>
+
 
 struct Vertex2DUV {
     glm::vec2 position;
@@ -17,3 +22,17 @@ GLint checkValid(GLint input, const char* name) {
     return input;
 }
 
+struct GeometricalContext {
+    GeometricalContext(uint width, uint height, 
+        Sphere *sphere, 
+        Circle *circle,
+        Ring *ring
+    ) : ctxtSphere{width, height, sphere}, 
+        ctxtCircle{width, height, circle}, 
+        ctxtRing{width, height, ring} {
+    }
+
+    Context<Sphere> ctxtSphere;
+    Context<Circle> ctxtCircle;
+    Context<Ring> ctxtRing;
+};

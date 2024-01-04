@@ -176,10 +176,7 @@ int main(int argc, char** argv) {
     Ring ring(10, 8, 42);
     // ADDING DEPTH HANDLING
     glEnable(GL_DEPTH_TEST);
-    Context<Sphere> ctxtSphere(WINDOW_WIDTH, WINDOW_HEIGHT, &sphere);
-    Context<Circle> ctxtCircle(WINDOW_WIDTH, WINDOW_HEIGHT, &circle);
-    Context<Ring> ctxtRing(WINDOW_WIDTH, WINDOW_HEIGHT, &ring);
-
+    GeometricalContext context(WINDOW_WIDTH, WINDOW_HEIGHT, &sphere, &circle, &ring);
 
     // Application loop:
     bool done = false;
@@ -204,21 +201,19 @@ int main(int argc, char** argv) {
         }
 
         if (focus != 0){
-            glm::mat4 tmp = sunProgram.getOnePosMatrix(ctxtSphere.globalMVMatrix * event.getViewMatrix(), focus, time);
+            glm::mat4 tmp = sunProgram.getOnePosMatrix(context.ctxtSphere.globalMVMatrix * event.getViewMatrix(), focus, time);
             sunProgram.drawAll(tmp, 
                 glm::mat4(1.0f),
                 time,
                 event.getDrawTraj(),
-                ctxtSphere,
-                ctxtCircle
+                context
             );
         }else {
-            sunProgram.drawAll(ctxtSphere.globalMVMatrix, 
+            sunProgram.drawAll(context.ctxtSphere.globalMVMatrix, 
                 event.getViewMatrix(), 
                 time,
                 event.getDrawTraj(),
-                ctxtSphere,
-                ctxtCircle
+                context
             );
         }
 
@@ -226,8 +221,9 @@ int main(int argc, char** argv) {
         windowManager.swapBuffers();
     }
     // Application free
-    ctxtSphere.free();
-    ctxtCircle.free();
+    context.ctxtSphere.free();
+    context.ctxtCircle.free();
+    context.ctxtRing.free();
     glDeleteTextures(1, &SUN_TEXTURE_ID);
     glDeleteTextures(1, &MERCURE_TEXTURE_ID);
     glDeleteTextures(1, &VENUS_TEXTURE_ID);
