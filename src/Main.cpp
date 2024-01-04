@@ -241,5 +241,6 @@ int main(int argc, char** argv) {
     glDeleteTextures(1, &MARS_DEIMOS_ID);
     glDeleteTextures(1, &MARS_PHOBOS_ID);
     glDeleteTextures(1, &DEFAULT_SATELLITE_TEXTURE_ID);
+    glDeleteTextures(1, &SATURNE_RING_TEXTURE_ID);
     return EXIT_SUCCESS;
 }
