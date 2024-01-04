@@ -202,11 +202,14 @@ struct RingedPlanetObjects : public AStellarObject {
     float m_ring_radius;
     glm::vec3 sattelites_initial_position;
     RingsObject m_rings;
-
+    FilledRingsObject m_filled_ring;
+    GLuint m_texture_id;
     RingedPlanetObjects(Program& program,
                   std::vector<const GLchar*> textures_uniform_locations,
                   std::vector<GLuint> texturesIds,
                   RingsObject ring,
+                  FilledRingsObject filled_ring,
+                  GLuint ring_texture_id,
                   float coef_diametre,
                   float dist_sol,
                   float orbitalPeriod,
@@ -214,7 +217,7 @@ struct RingedPlanetObjects : public AStellarObject {
                   float orbitalInclinaison,
                   float ringRadius
     ): AStellarObject {program, textures_uniform_locations, texturesIds},
-       m_rings{ring}, m_coef_diametre{coef_diametre}, m_dist_sol{dist_sol},
+       m_rings{ring}, m_filled_ring{filled_ring}, m_texture_id{ring_texture_id}, m_coef_diametre{coef_diametre}, m_dist_sol{dist_sol},
        m_orbitalPeriod{orbitalPeriod}, m_dayLength{dayLength},
        m_orbitalInclinaison{orbitalInclinaison}, m_ring_radius{ringRadius}
     {
@@ -260,7 +263,7 @@ struct RingedPlanetObjects : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
 
-        m_rings.draw(planetMVMatrix, m_coef_diametre + m_ring_radius, context.ctxtCircle);
+        m_filled_ring.draw(planetMVMatrix, m_ring_radius, context.ctxtRing, m_texture_id);
         return MVMatrixPos;
     }
 

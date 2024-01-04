@@ -179,4 +179,6 @@
 // pluton
 #define COEF_DISTANCE_CHARON (DISTANCE_CHARON / DISTANCE_SUN) / COEF_DISTANCE
 
+// saturne rings
+# define DISTANCE_RADIUS_SATURNE_RING (COEF_DIAMETRE_SATURNE * 3.56)
 const std::vector<std::string> planetsName = {"SUN","MERCURE","VENUS","TERRE","MARS","JUPITER","SATURNE","URANUS","NEPTUNE","PLUTON"};

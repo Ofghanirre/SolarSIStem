@@ -70,14 +70,15 @@ struct JupiterProgram : public PlanetObjects {
     {}
 };
 
-struct SaturneProgram : public PlanetObjects {
-    SaturneProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
-            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
+struct SaturneProgram : public RingedPlanetObjects {
+    SaturneProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring, FilledRingsObject filled_ring, GLuint textureId):
+            RingedPlanetObjects {program, textures_uniform_locations, texturesIds, ring, filled_ring, textureId,
                 COEF_DIAMETRE_SATURNE, //coef_diametre
                 COEF_DISTANCE_SATURNE + COEF_DIAMETRE_SUN, //dist_sol
                 10747.f, //orbitalPeriod
                 10.7f / 24.f, //dayLength
-                2.5f //orbitalInclinaison
+                2.5f, //orbitalInclinaison
+                DISTANCE_RADIUS_SATURNE_RING // ring diametre
             }
     {}
 };

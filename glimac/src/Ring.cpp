@@ -45,7 +45,7 @@ void Ring::build(GLfloat maxradius, GLfloat minradius, GLsizei discLat) {
 
         m_Vertices.push_back(inner_ring[i]);
         m_Vertices.push_back(inner_ring[j]);
-        m_Vertices.push_back(inner_ring[j]);
+        m_Vertices.push_back(outer_ring[j]);
     }
 
     m_nVertexCount = inner_ring.size() * 6;

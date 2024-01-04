@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
     GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID, SUN_TEXTURE_ID, MERCURE_TEXTURE_ID, VENUS_TEXTURE_ID,
     MARS_TEXTURE_ID, JUPITER_TEXTURE_ID, SATURNE_TEXTURE_ID, URANUS_TEXTURE_ID, NEPTUNE_TEXTURE_ID, PLUTON_TEXTURE_ID,
     MARS_PHOBOS_ID, MARS_DEIMOS_ID,
-    DEFAULT_SATELLITE_TEXTURE_ID;
+    DEFAULT_SATELLITE_TEXTURE_ID, SATURNE_RING_TEXTURE_ID;
     SUN_TEXTURE_ID = registerNewTexture("../assets/textures/SunMap.jpg");
     MERCURE_TEXTURE_ID = registerNewTexture("../assets/textures/MercuryMap.jpg");
     VENUS_TEXTURE_ID = registerNewTexture("../assets/textures/VenusMap.jpg");
@@ -63,6 +63,7 @@ int main(int argc, char** argv) {
     MARS_PHOBOS_ID = registerNewTexture("../assets/textures/MarsPhobosMap.jpg");
     MARS_DEIMOS_ID = registerNewTexture("../assets/textures/MarsDeimosMap.jpg");
     DEFAULT_SATELLITE_TEXTURE_ID = registerNewTexture("../assets/textures/DefaultSatelliteMap.jpg");
+    SATURNE_RING_TEXTURE_ID = registerNewTexture("../assets/textures/SaturnRingMap.jpg");
     std::cout << "done texture loading" << std::endl;
 
     // Loading & Compiling Shaders
@@ -79,10 +80,12 @@ int main(int argc, char** argv) {
     Program programNeptune(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/neptune3D.fs.glsl"));
     Program programPluton(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/pluton3D.fs.glsl"));
     Program programSatellite(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/satellite3D.fs.glsl"));
-    Program programCircle(loadProgram(applicationPath.dirPath() + "shaders/circle.vs.glsl", applicationPath.dirPath() + "shaders/circle.fs.glsl"));
     //Program programText(loadProgram(applicationPath.dirPath() + "shaders/text.vs.glsl", applicationPath.dirPath() + "shaders/text.fs.glsl"));
+    Program programCircle(loadProgram(applicationPath.dirPath() + "shaders/circle.vs.glsl", applicationPath.dirPath() + "shaders/circle.fs.glsl"));
+    Program programFilledRing(loadProgram(applicationPath.dirPath() + "shaders/ring.vs.glsl", applicationPath.dirPath() + "shaders/ring.fs.glsl"));
 
     RingsObject ringProgram(programCircle);
+    FilledRingsObject filledRingProgram(programFilledRing);
 
     SunProgram sunProgram(programSun, {"uSunTexture"}, {SUN_TEXTURE_ID});
     MercureProgram mercureProgram(programMercure, {"uMercureTexture"}, {MERCURE_TEXTURE_ID}, ringProgram);
@@ -91,7 +94,7 @@ int main(int argc, char** argv) {
     MoonProgram moonProgram(programMoon, {"uMoonTexture"}, {MOON_TEXTURE_ID}, ringProgram);
     MarsProgram marsProgram(programMars, {"uMarsTexture"}, {MARS_TEXTURE_ID}, ringProgram);
     JupiterProgram jupiterProgram(programJupiter, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID}, ringProgram);
-    SaturneProgram saturneProgram(programSaturne, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID}, ringProgram);
+    SaturneProgram saturneProgram(programSaturne, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID}, ringProgram, filledRingProgram, SATURNE_RING_TEXTURE_ID);
     UranusProgram uranusProgram(programUranus, {"uUranusTexture"}, {URANUS_TEXTURE_ID}, ringProgram);
     NeptuneProgram neptuneProgram(programNeptune, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID}, ringProgram);
     PlutonProgram plutonProgram(programPluton, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID}, ringProgram);
@@ -173,7 +176,7 @@ int main(int argc, char** argv) {
      *********************************/
     Sphere sphere(1, 32, 16);
     Circle circle(2, 42);
-    Ring ring(10, 8, 42);
+    Ring ring(2, 1, 42);
     // ADDING DEPTH HANDLING
     glEnable(GL_DEPTH_TEST);
     GeometricalContext context(WINDOW_WIDTH, WINDOW_HEIGHT, &sphere, &circle, &ring);
