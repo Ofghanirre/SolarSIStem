@@ -15,9 +15,9 @@ namespace glimac {
 
     public:
         // Constructeur: alloue le tableau de données et construit les attributs des vertex
-        Ellipse(GLfloat radius, GLsizei discLat, GLsizei discLong)
+        Ellipse(GLfloat width, GLsizei height, GLsizei amountOfPoints)
         {
-            build(radius, discLat, discLong); // Construction (voir le .cpp)
+            build(width, height, amountOfPoints); // Construction (voir le .cpp)
         }
     };
 }

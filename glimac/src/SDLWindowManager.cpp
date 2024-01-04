@@ -8,21 +8,10 @@ SDLWindowManager::SDLWindowManager(uint32_t width, uint32_t height, const char* 
         std::cerr << SDL_GetError() << std::endl;
         return;
     }
-    SDL_Surface *screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL);
-    if(!screen) {
+    if(SDL_SetVideoMode(width, height, 32, SDL_OPENGL)) {
         std::cerr << SDL_GetError() << std::endl;
         return;
     }
-    /*Initialisation de SDL_TTF ( les lien se font mal a la compilation)
-	if( TTF_Init() == -1 ) { 
-        std::cerr << SDL_GetError() << std::endl;
-		return; 
-	} else {
-        font = TTF_OpenFont("arial.ttf", 12);
-        fColor.r = 255;
-        fColor.g = 255;
-        fColor.b = 255;
-    }*/
     SDL_WM_SetCaption(title, nullptr);
 }
 
@@ -56,13 +45,5 @@ void SDLWindowManager::swapBuffers() {
 float SDLWindowManager::getTime() const {
     return 0.001f * SDL_GetTicks();
 }
-
-/* pour afficher du texte
-void SDLWindowManager::printF(char *c, int x, int y){
-    fontRect.x = x;
-    fontRect.y = y;
-    SDL_BlitSurface(TTF_RenderText_Solid(font, c, fColor), NULL, screen, &fontRect);
-    SDL_Flip(screen);
-}*/
 
 }

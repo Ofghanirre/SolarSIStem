@@ -5,7 +5,7 @@
 #define WINDOW_WIDTH 1600
 #define WINDOW_HEIGHT 1000
 
-template <class Shape>
+template <class S>
 struct Context
 {
     const GLuint VERTEX_ATTR_POSITION = 0; 
@@ -21,15 +21,15 @@ struct Context
     GLuint vbo; 
     GLuint vao;
 
-    Shape *m_shape = nullptr;
+    S *m_shape = nullptr;
 
-    Context(uint width, uint height, Shape *shape) :
-        ProjMatrix(glm::perspective(glm::radians(70.f), width/(float)height, 0.1f, 100.f)),
+    Context(uint width, uint height, S *shape) :
+        ProjMatrix(glm::perspective(glm::radians(70.f), width/(float)height, 0.1f, 300.f)),
         m_shape{shape}
     {
         glGenBuffers(1, &vbo); // Associate our vbo to a GL vbo
         glBindBuffer(GL_ARRAY_BUFFER, vbo); // On utilise le buffer vbo
-            glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertex) * shape->getVertexCount(), shape->getDataPointer(), GL_STATIC_DRAW); // remplissage du buffer
+            glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertex) * m_shape->getVertexCount(), m_shape->getDataPointer(), GL_STATIC_DRAW); // remplissage du buffer
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Debind le buffer vbo
 
         glGenVertexArrays(1, &vao); // Associate our vao to a GL vao
@@ -64,6 +64,12 @@ struct Context
                 );
             glBindBuffer(GL_ARRAY_BUFFER, 0); // Debind le buffer vbo
         glBindVertexArray(0); // On utilise l'array vao
+    }
+
+    // il faut que les Shape est le meme nombre de vertex et soit de meme type
+    void changeShape(S *newShape) {
+        assert(m_shape->getVertexCount() == newShape->getVertexCount());
+        m_shape = newShape;
     }
 
     void free() {
