@@ -264,7 +264,7 @@ struct RingedPlanetObjects : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
 
-        m_filled_ring.draw(planetMVMatrix, m_coef_diametre + m_ring_radius, m_ring_radius, context.ctxtRing, m_texture_id);
+        m_filled_ring.draw(planetMVMatrix, m_ring_radius, context.ctxtRing, m_texture_id);
         return MVMatrixPos;
     }
 
