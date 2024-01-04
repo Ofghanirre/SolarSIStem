@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
     GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID, SUN_TEXTURE_ID, MERCURE_TEXTURE_ID, VENUS_TEXTURE_ID,
     MARS_TEXTURE_ID, JUPITER_TEXTURE_ID, SATURNE_TEXTURE_ID, URANUS_TEXTURE_ID, NEPTUNE_TEXTURE_ID, PLUTON_TEXTURE_ID,
     MARS_PHOBOS_ID, MARS_DEIMOS_ID,
-    DEFAULT_SATELLITE_TEXTURE_ID;
+    DEFAULT_SATELLITE_TEXTURE_ID, SATURNE_RING_TEXTURE_ID;
     SUN_TEXTURE_ID = registerNewTexture("../assets/textures/SunMap.jpg");
     MERCURE_TEXTURE_ID = registerNewTexture("../assets/textures/MercuryMap.jpg");
     VENUS_TEXTURE_ID = registerNewTexture("../assets/textures/VenusMap.jpg");
@@ -64,6 +64,7 @@ int main(int argc, char** argv) {
     MARS_PHOBOS_ID = registerNewTexture("../assets/textures/MarsPhobosMap.jpg");
     MARS_DEIMOS_ID = registerNewTexture("../assets/textures/MarsDeimosMap.jpg");
     DEFAULT_SATELLITE_TEXTURE_ID = registerNewTexture("../assets/textures/DefaultSatelliteMap.jpg");
+    SATURNE_RING_TEXTURE_ID = registerNewTexture("../assets/textures/SaturnRingMap.jpg");
     std::cout << "done texture loading" << std::endl;
 
     // Loading & Compiling Shaders
@@ -80,10 +81,12 @@ int main(int argc, char** argv) {
     Program programNeptune(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/neptune3D.fs.glsl"));
     Program programPluton(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/pluton3D.fs.glsl"));
     Program programSatellite(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/satellite3D.fs.glsl"));
-    Program program2DShape(loadProgram(applicationPath.dirPath() + "shaders/circle.vs.glsl", applicationPath.dirPath() + "shaders/circle.fs.glsl"));
     //Program programText(loadProgram(applicationPath.dirPath() + "shaders/text.vs.glsl", applicationPath.dirPath() + "shaders/text.fs.glsl"));
+    Program program2DShape(loadProgram(applicationPath.dirPath() + "shaders/circle.vs.glsl", applicationPath.dirPath() + "shaders/circle.fs.glsl"));
+    Program programFilledRing(loadProgram(applicationPath.dirPath() + "shaders/ring.vs.glsl", applicationPath.dirPath() + "shaders/ring.fs.glsl"));
 
     RingsObject ringProgram(program2DShape);
+    FilledRingsObject filledRingProgram(programFilledRing);
 
     SunProgram sunProgram(programSun, {"uSunTexture"}, {SUN_TEXTURE_ID});
     MercureProgram mercureProgram(programMercure, {"uMercureTexture"}, {MERCURE_TEXTURE_ID}, ringProgram);
@@ -92,8 +95,8 @@ int main(int argc, char** argv) {
     MoonProgram moonProgram(programMoon, {"uMoonTexture"}, {MOON_TEXTURE_ID}, ringProgram);
     MarsProgram marsProgram(programMars, {"uMarsTexture"}, {MARS_TEXTURE_ID}, ringProgram);
     JupiterProgram jupiterProgram(programJupiter, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID}, ringProgram);
-    SaturneProgram saturneProgram(programSaturne, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID}, ringProgram);
-    UranusProgram uranusProgram(programUranus, {"uUranusTexture"}, {URANUS_TEXTURE_ID}, ringProgram);
+    SaturneProgram saturneProgram(programSaturne, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID}, ringProgram, filledRingProgram, SATURNE_RING_TEXTURE_ID);
+    UranusProgram uranusProgram(programUranus, {"uUranusTexture"}, {URANUS_TEXTURE_ID}, ringProgram, filledRingProgram, SATURNE_RING_TEXTURE_ID);
     NeptuneProgram neptuneProgram(programNeptune, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID}, ringProgram);
     PlutonProgram plutonProgram(programPluton, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID}, ringProgram);
     // MARS SATELLITES
@@ -174,13 +177,10 @@ int main(int argc, char** argv) {
      *********************************/
     Sphere sphere(1, 32, 16);
     Circle circle(2, 128);
-    Ring ring(10, 8, 42);
+    Ring ring(2, 1, 42);
     // ADDING DEPTH HANDLING
     glEnable(GL_DEPTH_TEST);
-    Context<Sphere> ctxtSphere(WINDOW_WIDTH, WINDOW_HEIGHT, &sphere);
-    Context<Circle> ctxtCircle(WINDOW_WIDTH, WINDOW_HEIGHT, &circle);
-    Context<Ring> ctxtRing(WINDOW_WIDTH, WINDOW_HEIGHT, &ring);
-
+    GeometricalContext context(WINDOW_WIDTH, WINDOW_HEIGHT, &sphere, &circle, &ring);
 
     // Application loop:
     bool done = false;
@@ -205,21 +205,19 @@ int main(int argc, char** argv) {
         }
 
         if (focus != 0){
-            glm::mat4 tmp = sunProgram.getOnePosMatrix(ctxtSphere.globalMVMatrix * event.getViewMatrix(), focus, time);
+            glm::mat4 tmp = sunProgram.getOnePosMatrix(context.ctxtSphere.globalMVMatrix * event.getViewMatrix(), focus, time);
             sunProgram.drawAll(tmp, 
                 glm::mat4(1.0f),
                 time,
                 event.getDrawTraj(),
-                ctxtSphere,
-                ctxtCircle
+                context
             );
         }else {
-            sunProgram.drawAll(ctxtSphere.globalMVMatrix, 
+            sunProgram.drawAll(context.ctxtSphere.globalMVMatrix, 
                 event.getViewMatrix(), 
                 time,
                 event.getDrawTraj(),
-                ctxtSphere,
-                ctxtCircle
+                context
             );
         }
 
@@ -227,8 +225,9 @@ int main(int argc, char** argv) {
         windowManager.swapBuffers();
     }
     // Application free
-    ctxtSphere.free();
-    ctxtCircle.free();
+    context.ctxtSphere.free();
+    context.ctxtCircle.free();
+    context.ctxtRing.free();
     glDeleteTextures(1, &SUN_TEXTURE_ID);
     glDeleteTextures(1, &MERCURE_TEXTURE_ID);
     glDeleteTextures(1, &VENUS_TEXTURE_ID);
@@ -243,5 +242,6 @@ int main(int argc, char** argv) {
     glDeleteTextures(1, &MARS_DEIMOS_ID);
     glDeleteTextures(1, &MARS_PHOBOS_ID);
     glDeleteTextures(1, &DEFAULT_SATELLITE_TEXTURE_ID);
+    glDeleteTextures(1, &SATURNE_RING_TEXTURE_ID);
     return EXIT_SUCCESS;
 }

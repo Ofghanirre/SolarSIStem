@@ -67,12 +67,11 @@ struct AStellarObject {
         glm::mat4 viewMatrix,
         float time,
         bool traj,
-        Context<Sphere> ctxtSphere,
-        Context<Circle> ctxtCircle
+        GeometricalContext context
     ) {
-        glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, time, traj, ctxtSphere, ctxtCircle);
+        glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, time, traj, context);
         for(auto satelite : m_satelites){
-            satelite->drawAll(matrixPos, viewMatrix, time, traj, ctxtSphere, ctxtCircle);
+            satelite->drawAll(matrixPos, viewMatrix, time, traj, context);
         }
     }
 
@@ -85,8 +84,7 @@ struct AStellarObject {
         glm::mat4 viewMatrix,
         float time, 
         bool traj,
-        Context<Sphere> ctxtSphere,
-        Context<Circle> ctxtCircle
+        GeometricalContext context
     ) = 0;
 
     virtual glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) = 0;
@@ -141,13 +139,12 @@ struct PlanetObjects : public AStellarObject {
         glm::mat4 viewMatrix,
         float time,
         bool traj,
-        Context<Sphere> ctxtSphere,
-        Context<Circle> ctxtCircle
+        GeometricalContext context
     ) override
     {
         glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation
         if (traj) {
-            m_rings.draw(planetMVMatrix, m_aphelion, m_perihelion, ctxtCircle);
+            m_rings.draw(planetMVMatrix, m_aphelion, m_perihelion, context.ctxtCircle);
         }
         use();
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
@@ -164,15 +161,15 @@ struct PlanetObjects : public AStellarObject {
         glUniformMatrix4fv(AStellarObject::m_uNormalMatrix, 1, GL_FALSE,
                            glm::value_ptr(glm::transpose(glm::inverse(planetMVMatrix))));
         glUniformMatrix4fv(AStellarObject::m_uMVPMatrix, 1, GL_FALSE,
-                           glm::value_ptr(ctxtSphere.ProjMatrix * planetMVMatrix));
+                           glm::value_ptr(context.ctxtSphere.ProjMatrix * planetMVMatrix));
 
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
             glBindTexture(GL_TEXTURE_2D, AStellarObject::m_texturesIds[i]);
         }
 
-        glBindVertexArray(ctxtSphere.vao); // On utilise l'array vao
-        glDrawArrays(GL_TRIANGLES, 0, ctxtSphere.m_shape->getVertexCount());
+        glBindVertexArray(context.ctxtSphere.vao); // On utilise l'array vao
+        glDrawArrays(GL_TRIANGLES, 0, context.ctxtSphere.m_shape->getVertexCount());
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
         return MVMatrixPos;
@@ -199,11 +196,14 @@ struct RingedPlanetObjects : public AStellarObject {
     float m_nominateur;
     float m_ring_radius;
     RingsObject m_rings;
-
+    FilledRingsObject m_filled_ring;
+    GLuint m_texture_id;
     RingedPlanetObjects(Program& program,
                   std::vector<const GLchar*> textures_uniform_locations,
                   std::vector<GLuint> texturesIds,
                   RingsObject ring,
+                  FilledRingsObject filled_ring,
+                  GLuint ring_texture_id,
                   float coef_diametre,
                   float perihelion, 
                   float aphelion,
@@ -212,7 +212,7 @@ struct RingedPlanetObjects : public AStellarObject {
                   float orbitalInclinaison,
                   float ringRadius
     ): AStellarObject {program, textures_uniform_locations, texturesIds},
-       m_rings{ring}, m_coef_diametre{coef_diametre},
+       m_rings{ring}, m_filled_ring{filled_ring}, m_texture_id{ring_texture_id}, m_coef_diametre{coef_diametre},
        m_aphelion{aphelion}, m_perihelion{perihelion},
        m_orbitalPeriod{orbitalPeriod}, m_dayLength{dayLength},
        m_orbitalInclinaison{orbitalInclinaison}, m_ring_radius{ringRadius}
@@ -230,13 +230,12 @@ struct RingedPlanetObjects : public AStellarObject {
             glm::mat4 viewMatrix,
             float time,
             bool traj,
-            Context<Sphere> ctxtSphere,
-            Context<Circle> ctxtCircle
+            GeometricalContext context
     ) override
     {
         glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation
         if (traj) {
-            m_rings.draw(planetMVMatrix, m_aphelion, m_perihelion, ctxtCircle);
+            m_rings.draw(planetMVMatrix, m_aphelion, m_perihelion, context.ctxtCircle);
         }
         use();
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
@@ -253,19 +252,19 @@ struct RingedPlanetObjects : public AStellarObject {
         glUniformMatrix4fv(AStellarObject::m_uNormalMatrix, 1, GL_FALSE,
                            glm::value_ptr(glm::transpose(glm::inverse(planetMVMatrix))));
         glUniformMatrix4fv(AStellarObject::m_uMVPMatrix, 1, GL_FALSE,
-                           glm::value_ptr(ctxtSphere.ProjMatrix * planetMVMatrix));
+                           glm::value_ptr(context.ctxtSphere.ProjMatrix * planetMVMatrix));
 
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
             glBindTexture(GL_TEXTURE_2D, AStellarObject::m_texturesIds[i]);
         }
 
-        glBindVertexArray(ctxtSphere.vao); // On utilise l'array vao
-        glDrawArrays(GL_TRIANGLES, 0, ctxtSphere.m_shape->getVertexCount());
+        glBindVertexArray(context.ctxtSphere.vao); // On utilise l'array vao
+        glDrawArrays(GL_TRIANGLES, 0, context.ctxtSphere.m_shape->getVertexCount());
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
 
-        m_rings.draw(planetMVMatrix, m_coef_diametre + m_ring_radius, m_coef_diametre + m_ring_radius, ctxtCircle);
+        m_filled_ring.draw(planetMVMatrix, m_ring_radius, context.ctxtRing, m_texture_id);
         return MVMatrixPos;
     }
 
