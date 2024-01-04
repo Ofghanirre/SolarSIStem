@@ -181,4 +181,6 @@
 
 // saturne rings
 # define DISTANCE_RADIUS_SATURNE_RING (COEF_DIAMETRE_SATURNE * 3.56)
+# define DISTANCE_RADIUS_URANUS_RING (COEF_DIAMETRE_URANUS * 8)
+
 const std::vector<std::string> planetsName = {"SUN","MERCURE","VENUS","TERRE","MARS","JUPITER","SATURNE","URANUS","NEPTUNE","PLUTON"};

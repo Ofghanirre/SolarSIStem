@@ -83,14 +83,15 @@ struct SaturneProgram : public RingedPlanetObjects {
     {}
 };
 
-struct UranusProgram : public PlanetObjects {
-    UranusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring):
-            PlanetObjects {program, textures_uniform_locations, texturesIds, ring,
+struct UranusProgram : public RingedPlanetObjects {
+    UranusProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds, RingsObject ring, FilledRingsObject filled_ring, GLuint textureId):
+            RingedPlanetObjects {program, textures_uniform_locations, texturesIds, ring, filled_ring, textureId,
                 COEF_DIAMETRE_URANUS, //coef_diametre
                 COEF_DISTANCE_URANUS + COEF_DIAMETRE_SUN, //dist_sol
                 30589.f, //orbitalPeriod
                 17.2f / 24.f, //dayLength
-                .8f //orbitalInclinaison
+                .8f, //orbitalInclinaison
+                DISTANCE_RADIUS_URANUS_RING // ring diametre
             }
     {}
 };

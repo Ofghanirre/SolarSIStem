@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     MarsProgram marsProgram(programMars, {"uMarsTexture"}, {MARS_TEXTURE_ID}, ringProgram);
     JupiterProgram jupiterProgram(programJupiter, {"uJupiterTexture"}, {JUPITER_TEXTURE_ID}, ringProgram);
     SaturneProgram saturneProgram(programSaturne, {"uSaturneTexture"}, {SATURNE_TEXTURE_ID}, ringProgram, filledRingProgram, SATURNE_RING_TEXTURE_ID);
-    UranusProgram uranusProgram(programUranus, {"uUranusTexture"}, {URANUS_TEXTURE_ID}, ringProgram);
+    UranusProgram uranusProgram(programUranus, {"uUranusTexture"}, {URANUS_TEXTURE_ID}, ringProgram, filledRingProgram, SATURNE_RING_TEXTURE_ID);
     NeptuneProgram neptuneProgram(programNeptune, {"uNeptuneTexture"}, {NEPTUNE_TEXTURE_ID}, ringProgram);
     PlutonProgram plutonProgram(programPluton, {"uPlutonTexture"}, {PLUTON_TEXTURE_ID}, ringProgram);
     // MARS SATELLITES
