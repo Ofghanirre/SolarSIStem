@@ -37,21 +37,22 @@ struct RingsObject {
 
     void draw(
         glm::mat4 globalMVMatrix, 
-        float size,
-        Context<Circle> ctxtCircle
+        float width,
+        float height,
+        Context<Circle> ctxtShape
     ){
         use();
-        glm::mat4 planetMVMatrix = glm::scale(globalMVMatrix, glm::vec3(size / 2, size / 2, size / 2)); // Translation * Rotation * Translation * Scale
+        glm::mat4 planetMVMatrix = glm::scale(globalMVMatrix, glm::vec3(width / 2, height / 2, height / 2)); // Translation * Rotation * Translation * Scale
 
         glUniformMatrix4fv(m_uMVMatrix, 1, GL_FALSE,
                            glm::value_ptr(planetMVMatrix));
         glUniformMatrix4fv(m_uNormalMatrix, 1, GL_FALSE,
                            glm::value_ptr(glm::transpose(glm::inverse(planetMVMatrix))));
         glUniformMatrix4fv(m_uMVPMatrix, 1, GL_FALSE,
-                           glm::value_ptr(ctxtCircle.ProjMatrix * planetMVMatrix));
+                           glm::value_ptr(ctxtShape.ProjMatrix * planetMVMatrix));
 
-        glBindVertexArray(ctxtCircle.vao); // On utilise l'array vao
-        glDrawArrays(GL_LINES, 0, ctxtCircle.m_shape->getVertexCount());
+        glBindVertexArray(ctxtShape.vao); // On utilise l'array vao
+        glDrawArrays(GL_LINES, 0, ctxtShape.m_shape->getVertexCount());
         glBindVertexArray(0); // On utilise l'array vao
     }
 };

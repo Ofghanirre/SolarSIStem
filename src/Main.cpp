@@ -15,6 +15,7 @@
 #include "shared/shared.hpp"
 #include "stellarObjects/all.hpp"
 #include "glimac/Ring.hpp"
+#include "glimac/Ellipse.hpp"
 
 using namespace glimac;
 
@@ -79,10 +80,10 @@ int main(int argc, char** argv) {
     Program programNeptune(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/neptune3D.fs.glsl"));
     Program programPluton(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/pluton3D.fs.glsl"));
     Program programSatellite(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/satellite3D.fs.glsl"));
-    Program programCircle(loadProgram(applicationPath.dirPath() + "shaders/circle.vs.glsl", applicationPath.dirPath() + "shaders/circle.fs.glsl"));
+    Program program2DShape(loadProgram(applicationPath.dirPath() + "shaders/circle.vs.glsl", applicationPath.dirPath() + "shaders/circle.fs.glsl"));
     //Program programText(loadProgram(applicationPath.dirPath() + "shaders/text.vs.glsl", applicationPath.dirPath() + "shaders/text.fs.glsl"));
 
-    RingsObject ringProgram(programCircle);
+    RingsObject ringProgram(program2DShape);
 
     SunProgram sunProgram(programSun, {"uSunTexture"}, {SUN_TEXTURE_ID});
     MercureProgram mercureProgram(programMercure, {"uMercureTexture"}, {MERCURE_TEXTURE_ID}, ringProgram);
@@ -172,7 +173,7 @@ int main(int argc, char** argv) {
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
     Sphere sphere(1, 32, 16);
-    Circle circle(2, 42);
+    Circle circle(2, 128);
     Ring ring(10, 8, 42);
     // ADDING DEPTH HANDLING
     glEnable(GL_DEPTH_TEST);
