@@ -6,7 +6,7 @@
 #include <vector>
 #include <iostream>
 #include "glimac/common.hpp"
-#include "glimac/Ellipse.h"
+#include "glimac/Ellipse.hpp"
 
 namespace glimac {
 
