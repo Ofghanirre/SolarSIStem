@@ -34,6 +34,8 @@ struct AStellarObject {
     std::vector<GLuint> ArchiveTextureName = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2};
     std::vector<AStellarObject*> m_satelites;
     GLuint m_uLightSourceLocation;
+    GLuint m_uViewPosition;
+
     AStellarObject(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds) : 
         m_Program{program}, m_textures{texturesIds}
     {
@@ -48,6 +50,7 @@ struct AStellarObject {
             m_textures.emplace_back(checkValid(glGetUniformLocation(m_Program.getGLId(), textures_uniform_locations[i]), textures_uniform_locations[i]));
         }
         m_uLightSourceLocation = glGetUniformLocation(m_Program.getGLId(), "uLightSource");
+        m_uViewPosition = glGetUniformLocation(m_Program.getGLId(), "uViewPosition");
     }
 
     void update() {
@@ -58,6 +61,7 @@ struct AStellarObject {
             m_textures.emplace_back(checkValid(glGetUniformLocation(m_Program.getGLId(), textureName), textureName));
         }
         m_uLightSourceLocation = glGetUniformLocation(m_Program.getGLId(), "uLightSource");
+        m_uViewPosition = glGetUniformLocation(m_Program.getGLId(), "uViewPosition");
     }
     
     
@@ -177,6 +181,7 @@ struct PlanetObjects : public AStellarObject {
         // Calcul de la position du soleil dans l'espace de vue
         glm::vec3 sunPositionViewSpace = glm::vec3(viewMatrix * glm::vec4(sunPositionWorldSpace, 1.0f));
         glUniform3f(m_uLightSourceLocation, sunPositionViewSpace.x, sunPositionViewSpace.y, sunPositionViewSpace.z);
+        glUniform3f(m_uViewPosition, viewMatrix[2][0], viewMatrix[2][1], viewMatrix[2][2]);
 
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
@@ -277,6 +282,7 @@ struct RingedPlanetObjects : public AStellarObject {
         // Calcul de la position du soleil dans l'espace de vue
         glm::vec3 sunPositionViewSpace = glm::vec3(viewMatrix * glm::vec4(sunPositionWorldSpace, 1.0f));
         glUniform3f(m_uLightSourceLocation, sunPositionViewSpace.x, sunPositionViewSpace.y, sunPositionViewSpace.z);
+        glUniform3f(m_uViewPosition, viewMatrix[2][0], viewMatrix[2][1], viewMatrix[2][2]);
 
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
