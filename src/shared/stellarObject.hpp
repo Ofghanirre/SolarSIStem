@@ -33,7 +33,7 @@ struct AStellarObject {
     std::vector<GLuint> m_texturesIds;
     std::vector<GLuint> ArchiveTextureName = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2};
     std::vector<AStellarObject*> m_satelites;
-
+    GLuint m_uLightSourceLocation;
     AStellarObject(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds) : 
         m_Program{program}, m_textures{texturesIds}
     {
@@ -47,6 +47,7 @@ struct AStellarObject {
             m_texturesNames.emplace_back(textures_uniform_locations[i]);
             m_textures.emplace_back(checkValid(glGetUniformLocation(m_Program.getGLId(), textures_uniform_locations[i]), textures_uniform_locations[i]));
         }
+        m_uLightSourceLocation = glGetUniformLocation(m_Program.getGLId(), "uLightSource");
     }
 
     void update() {
@@ -56,6 +57,7 @@ struct AStellarObject {
         for (auto textureName: m_texturesNames){
             m_textures.emplace_back(checkValid(glGetUniformLocation(m_Program.getGLId(), textureName), textureName));
         }
+        m_uLightSourceLocation = glGetUniformLocation(m_Program.getGLId(), "uLightSource");
     }
     
     
@@ -67,11 +69,12 @@ struct AStellarObject {
         glm::mat4 viewMatrix,
         float time,
         bool traj,
-        GeometricalContext context
+        GeometricalContext context,
+        glm::mat4 lightSourceMatrix
     ) {
-        glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, time, traj, context);
+        glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, time, traj, context, lightSourceMatrix);
         for(auto satelite : m_satelites){
-            satelite->drawAll(matrixPos, viewMatrix, time, traj, context);
+            satelite->drawAll(matrixPos, viewMatrix, time, traj, context, lightSourceMatrix);
         }
     }
 
@@ -84,7 +87,8 @@ struct AStellarObject {
         glm::mat4 viewMatrix,
         float time, 
         bool traj,
-        GeometricalContext context
+        GeometricalContext context,
+        glm::mat4 lightSourceMatrix 
     ) = 0;
 
     virtual glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) = 0;
@@ -139,7 +143,8 @@ struct PlanetObjects : public AStellarObject {
         glm::mat4 viewMatrix,
         float time,
         bool traj,
-        GeometricalContext context
+        GeometricalContext context,
+        glm::mat4 lightSourceMatrix 
     ) override
     {
         glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation
@@ -162,6 +167,16 @@ struct PlanetObjects : public AStellarObject {
                            glm::value_ptr(glm::transpose(glm::inverse(planetMVMatrix))));
         glUniformMatrix4fv(AStellarObject::m_uMVPMatrix, 1, GL_FALSE,
                            glm::value_ptr(context.ctxtSphere.ProjMatrix * planetMVMatrix));
+
+        // LIGHT INFO
+        // Position initiale du soleil (au centre du modèle)
+        glm::vec3 sunPositionModelSpace = glm::vec3(0.0f, 0.0f, 0.0f);
+        // Calcul de la position du soleil dans le modèle
+        glm::vec3 sunPositionWorldSpace = glm::vec3(lightSourceMatrix * glm::vec4(sunPositionModelSpace, 1.0f));
+
+        // Calcul de la position du soleil dans l'espace de vue
+        glm::vec3 sunPositionViewSpace = glm::vec3(viewMatrix * glm::vec4(sunPositionWorldSpace, 1.0f));
+        glUniform3f(m_uLightSourceLocation, sunPositionViewSpace.x, sunPositionViewSpace.y, sunPositionViewSpace.z);
 
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
@@ -230,7 +245,8 @@ struct RingedPlanetObjects : public AStellarObject {
             glm::mat4 viewMatrix,
             float time,
             bool traj,
-            GeometricalContext context
+            GeometricalContext context,
+            glm::mat4 lightSourceMatrix 
     ) override
     {
         glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation
@@ -253,6 +269,14 @@ struct RingedPlanetObjects : public AStellarObject {
                            glm::value_ptr(glm::transpose(glm::inverse(planetMVMatrix))));
         glUniformMatrix4fv(AStellarObject::m_uMVPMatrix, 1, GL_FALSE,
                            glm::value_ptr(context.ctxtSphere.ProjMatrix * planetMVMatrix));
+        // LIGHT INFO
+        // Position initiale du soleil (au centre du modèle)
+        glm::vec3 sunPositionModelSpace = glm::vec3(0.0f, 0.0f, 0.0f);
+                // Calcul de la position du soleil dans le modèle
+        glm::vec3 sunPositionWorldSpace = glm::vec3(lightSourceMatrix * glm::vec4(sunPositionModelSpace, 1.0f));
+        // Calcul de la position du soleil dans l'espace de vue
+        glm::vec3 sunPositionViewSpace = glm::vec3(viewMatrix * glm::vec4(sunPositionWorldSpace, 1.0f));
+        glUniform3f(m_uLightSourceLocation, sunPositionViewSpace.x, sunPositionViewSpace.y, sunPositionViewSpace.z);
 
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
@@ -264,7 +288,7 @@ struct RingedPlanetObjects : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
 
-        m_filled_ring.draw(planetMVMatrix, m_ring_radius, context.ctxtRing, m_texture_id);
+        m_filled_ring.draw(planetMVMatrix, m_ring_radius, context.ctxtRing, m_texture_id, sunPositionViewSpace);
         return MVMatrixPos;
     }
 

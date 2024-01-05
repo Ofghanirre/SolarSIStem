@@ -9,6 +9,29 @@ out vec3 fFragColor;
 uniform sampler2D uEarthTexture;
 uniform sampler2D uCloudTexture;
 
+
+// Paramètres de lumière
+const vec3 uLightColor = vec3(1.0, 1.0, 1.0); // Lumière blanche, RGB (1, 1, 1)
+const vec3 uAmbientColor = vec3(0.0, 0.0, 0.0); // Pas de composante ambiante
+uniform vec3 uLightSource;
+
 void main() {
-  fFragColor = texture(uEarthTexture, vTexCoords).rgb + texture(uCloudTexture, vTexCoords).rgb;
+    // Normalisation de la normale
+    vec3 normal = normalize(vNormalVC);
+    vec3 lightDirection = normalize(uLightSource - vPositionVC);
+    
+    // Calcul de l'intensité diffuse
+    float diffuseIntensity = max(dot(normal, lightDirection), 0.0);
+
+    // Combinaison de la texture de la terre et de la texture des nuages avec l'éclairage
+    vec3 earthColor = texture(uEarthTexture, vTexCoords).rgb;
+    vec3 cloudColor = texture(uCloudTexture, vTexCoords).rgb;
+
+    vec3 combinedColor = earthColor + cloudColor;
+
+    // Application de l'éclairage diffus
+    vec3 finalColor = combinedColor * (diffuseIntensity * uLightColor + uAmbientColor);
+
+    // Assignation de la couleur finale
+    fFragColor = finalColor;
 };

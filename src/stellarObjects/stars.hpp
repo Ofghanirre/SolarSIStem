@@ -22,7 +22,8 @@ struct SunProgram : public AStellarObject{
         glm::mat4 viewMatrix,
         float time,
         bool traj,
-        GeometricalContext context
+        GeometricalContext context,
+        glm::mat4 lightSourceMatrix 
     ) override
     {
         use();

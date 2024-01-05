@@ -210,14 +210,16 @@ int main(int argc, char** argv) {
                 glm::mat4(1.0f),
                 time,
                 event.getDrawTraj(),
-                context
+                context,
+                tmp
             );
-        }else {
+        } else {
             sunProgram.drawAll(context.ctxtSphere.globalMVMatrix, 
                 event.getViewMatrix(), 
                 time,
                 event.getDrawTraj(),
-                context
+                context,
+                context.ctxtSphere.globalMVMatrix
             );
         }
 
