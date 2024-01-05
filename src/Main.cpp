@@ -211,7 +211,8 @@ int main(int argc, char** argv) {
                 time,
                 event.getDrawTraj(),
                 context,
-                tmp
+                tmp,
+                event.isLightOn()
             );
         } else {
             sunProgram.drawAll(context.ctxtSphere.globalMVMatrix, 
@@ -219,7 +220,8 @@ int main(int argc, char** argv) {
                 time,
                 event.getDrawTraj(),
                 context,
-                context.ctxtSphere.globalMVMatrix
+                context.ctxtSphere.globalMVMatrix,
+                event.isLightOn()
             );
         }
 

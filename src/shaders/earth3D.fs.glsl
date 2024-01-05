@@ -16,33 +16,33 @@ const vec3 uAmbientColor = vec3(0.0, 0.0, 0.0); // Pas de composante ambiante
 uniform vec3 uLightSource;
 uniform vec3 uViewPosition; // position caméra
 uniform float uShininess = 32.0; // facteur de brillance
+uniform int isLightOn;
 
 void main() {
-    // Normalisation de la normale
-    vec3 normal = normalize(vNormalVC);
-    vec3 lightDirection = normalize(uLightSource - vPositionVC);
-    
-    // Calcul de la direction de la vue
-    vec3 viewDirection = normalize(uViewPosition - vPositionVC);
-
-    // Calcul de la moitié de la direction entre la direction de la lumière et la direction de la vue
-    vec3 h = normalize(lightDirection + viewDirection);
-
-    // Calcul de l'intensité diffuse
-    float diffuseIntensity = max(dot(normal, lightDirection), 0.0);
-
-    // Calcul de l'intensité spéculaire (Blinn-Phong)
-    float specularIntensity = pow(max(dot(normal, h), 0.0), uShininess);
-
     // Combinaison de la texture de la terre et de la texture des nuages avec l'éclairage
     vec3 earthColor = texture(uEarthTexture, vTexCoords).rgb;
     vec3 cloudColor = texture(uCloudTexture, vTexCoords).rgb;
 
-    vec3 combinedColor = earthColor + cloudColor;
+    vec3 finalColor = earthColor + cloudColor;
+    if (isLightOn != 0) {
+        // Normalisation de la normale
+        vec3 normal = normalize(vNormalVC);
+        vec3 lightDirection = normalize(uLightSource - vPositionVC);
+        
+        // Calcul de la direction de la vue
+        vec3 viewDirection = normalize(uViewPosition - vPositionVC);
 
-    // Application de l'éclairage diffus
-    vec3 finalColor = combinedColor * (diffuseIntensity * uLightColor + specularIntensity * uLightColor) + uAmbientColor;
+        // Calcul de la moitié de la direction entre la direction de la lumière et la direction de la vue
+        vec3 h = normalize(lightDirection + viewDirection);
 
-    // Assignation de la couleur finale
+        // Calcul de l'intensité diffuse
+        float diffuseIntensity = max(dot(normal, lightDirection), 0.0);
+
+        // Calcul de l'intensité spéculaire (Blinn-Phong)
+        float specularIntensity = pow(max(dot(normal, h), 0.0), uShininess);
+
+        // Application de l'éclairage diffus
+        finalColor = finalColor * (diffuseIntensity * uLightColor + specularIntensity * uLightColor) + uAmbientColor;
+    } 
     fFragColor = finalColor;
 };

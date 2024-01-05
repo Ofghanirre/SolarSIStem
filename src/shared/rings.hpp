@@ -67,6 +67,7 @@ struct FilledRingsObject {
 
     GLint m_texture_id;
     GLint m_uLightSourceLocation;
+    GLuint m_isLightOnLocation;
 
     FilledRingsObject(Program& program) : 
         m_Program{program}
@@ -76,6 +77,7 @@ struct FilledRingsObject {
         m_uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");
         m_texture_id = checkValid(glGetUniformLocation(m_Program.getGLId(), "uRingTexture"), "uRingTexture");
         m_uLightSourceLocation = glGetUniformLocation(m_Program.getGLId(), "uLightSource");
+        m_isLightOnLocation = glGetUniformLocation(m_Program.getGLId(), "isLightOn");
     }
 
     void update() {
@@ -84,6 +86,7 @@ struct FilledRingsObject {
         m_uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");
         m_texture_id = checkValid(glGetUniformLocation(m_Program.getGLId(), "uRingTexture"), "uRingTexture");
         m_uLightSourceLocation = glGetUniformLocation(m_Program.getGLId(), "uLightSource");
+        m_isLightOnLocation = glGetUniformLocation(m_Program.getGLId(), "isLightOn");
     }
 
     void use() {
@@ -95,7 +98,8 @@ struct FilledRingsObject {
         float size,
         Context<Ring> ctxtRing,
         GLuint texture_id,
-        glm::vec3 lightSourcePosition
+        glm::vec3 lightSourcePosition,
+        int isLightOn
     ){
         use();
         glUniform1i(m_texture_id, 0);
@@ -109,7 +113,7 @@ struct FilledRingsObject {
                            glm::value_ptr(ctxtRing.ProjMatrix * planetMVMatrix));
 
         glUniform3f(m_uLightSourceLocation, lightSourcePosition.x, lightSourcePosition.y, lightSourcePosition.z);
-
+        glUniform1i(m_isLightOnLocation, isLightOn);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture_id);

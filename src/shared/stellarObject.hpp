@@ -35,7 +35,7 @@ struct AStellarObject {
     std::vector<AStellarObject*> m_satelites;
     GLuint m_uLightSourceLocation;
     GLuint m_uViewPosition;
-
+    GLuint m_isLightOnLocation;
     AStellarObject(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds) : 
         m_Program{program}, m_textures{texturesIds}
     {
@@ -51,6 +51,7 @@ struct AStellarObject {
         }
         m_uLightSourceLocation = glGetUniformLocation(m_Program.getGLId(), "uLightSource");
         m_uViewPosition = glGetUniformLocation(m_Program.getGLId(), "uViewPosition");
+        m_isLightOnLocation = glGetUniformLocation(m_Program.getGLId(), "isLightOn");
     }
 
     void update() {
@@ -74,11 +75,12 @@ struct AStellarObject {
         float time,
         bool traj,
         GeometricalContext context,
-        glm::mat4 lightSourceMatrix
+        glm::mat4 lightSourceMatrix,
+        int isLightOn
     ) {
-        glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, time, traj, context, lightSourceMatrix);
+        glm::mat4 matrixPos = draw(globalMVMatrix, viewMatrix, time, traj, context, lightSourceMatrix, isLightOn);
         for(auto satelite : m_satelites){
-            satelite->drawAll(matrixPos, viewMatrix, time, traj, context, lightSourceMatrix);
+            satelite->drawAll(matrixPos, viewMatrix, time, traj, context, lightSourceMatrix, isLightOn);
         }
     }
 
@@ -92,7 +94,8 @@ struct AStellarObject {
         float time, 
         bool traj,
         GeometricalContext context,
-        glm::mat4 lightSourceMatrix 
+        glm::mat4 lightSourceMatrix,
+        int isLightOn
     ) = 0;
 
     virtual glm::mat4 getPosMatrix(glm::mat4 globalMVMatrix, float time) = 0;
@@ -148,7 +151,8 @@ struct PlanetObjects : public AStellarObject {
         float time,
         bool traj,
         GeometricalContext context,
-        glm::mat4 lightSourceMatrix 
+        glm::mat4 lightSourceMatrix ,
+        int isLightOn
     ) override
     {
         glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation
@@ -182,7 +186,7 @@ struct PlanetObjects : public AStellarObject {
         glm::vec3 sunPositionViewSpace = glm::vec3(viewMatrix * glm::vec4(sunPositionWorldSpace, 1.0f));
         glUniform3f(m_uLightSourceLocation, sunPositionViewSpace.x, sunPositionViewSpace.y, sunPositionViewSpace.z);
         glUniform3f(m_uViewPosition, viewMatrix[2][0], viewMatrix[2][1], viewMatrix[2][2]);
-
+        glUniform1i(m_isLightOnLocation, isLightOn);
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
             glBindTexture(GL_TEXTURE_2D, AStellarObject::m_texturesIds[i]);
@@ -251,7 +255,8 @@ struct RingedPlanetObjects : public AStellarObject {
             float time,
             bool traj,
             GeometricalContext context,
-            glm::mat4 lightSourceMatrix 
+            glm::mat4 lightSourceMatrix,
+            int isLightOn 
     ) override
     {
         glm::mat4 planetMVMatrix = glm::rotate(globalMVMatrix, glm::radians(m_orbitalInclinaison), glm::vec3(1, 0, 0)); // Translation * Rotation
@@ -283,6 +288,7 @@ struct RingedPlanetObjects : public AStellarObject {
         glm::vec3 sunPositionViewSpace = glm::vec3(viewMatrix * glm::vec4(sunPositionWorldSpace, 1.0f));
         glUniform3f(m_uLightSourceLocation, sunPositionViewSpace.x, sunPositionViewSpace.y, sunPositionViewSpace.z);
         glUniform3f(m_uViewPosition, viewMatrix[2][0], viewMatrix[2][1], viewMatrix[2][2]);
+        glUniform1i(m_isLightOnLocation, isLightOn);
 
         for(uint i = 0; i < AStellarObject::m_texturesIds.size(); i++){
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
@@ -294,7 +300,7 @@ struct RingedPlanetObjects : public AStellarObject {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0); // On utilise l'array vao
 
-        m_filled_ring.draw(planetMVMatrix, m_ring_radius, context.ctxtRing, m_texture_id, sunPositionViewSpace);
+        m_filled_ring.draw(planetMVMatrix, m_ring_radius, context.ctxtRing, m_texture_id, sunPositionViewSpace, isLightOn);
         return MVMatrixPos;
     }
 
