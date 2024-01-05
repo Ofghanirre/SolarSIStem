@@ -8,7 +8,7 @@ const std::vector<std::string> ViewName = {"PROFILE","HAUT","TRACBALL", "FREEFLY
 
 class ManageEvent {
 public:
-    ManageEvent(glimac::SDLWindowManager &e, bool *upadte) : m_event(e), m_update{upadte} {};
+    ManageEvent(glimac::SDLWindowManager &e, bool *update) : m_event(e), m_update{update} {};
 
     bool exeEvent(bool move)
     {
@@ -76,6 +76,10 @@ public:
         return m_drawTraj;
     }
 
+    int isLightOn() {
+        return m_isLightOn;
+    }
+
 private:
     bool executeKey(SDLKey key, bool pres) {
         switch(key) {
@@ -127,6 +131,9 @@ private:
                 speed = (speed % 50) + 5;
                 *m_update = true;
                 break;
+            case SDLK_l: // switch light on/off
+                m_isLightOn = (m_isLightOn + 1) % 2;
+                break;
             default : 
                 std::cout << "key :" << key << std::endl;
         };
@@ -167,4 +174,5 @@ private:
     uint speed = 5;
     bool *m_update;
     bool m_drawTraj;
+    int m_isLightOn = 1;
 };

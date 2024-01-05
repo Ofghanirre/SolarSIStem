@@ -12,17 +12,22 @@
 struct SunProgram : public AStellarObject{
     float coef_diametre = COEF_DIAMETRE_SUN;
     const float dist_sol = 0.0f;
+    GLuint m_uTimeLocation;
 
     SunProgram(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds):
             AStellarObject {program, textures_uniform_locations, texturesIds}
-    {}
+    {
+        m_uTimeLocation = glGetUniformLocation(m_Program.getGLId(), "uTime");
+    }
 
     glm::mat4 draw(
         glm::mat4 globalMVMatrix,
         glm::mat4 viewMatrix,
         float time,
         bool traj,
-        GeometricalContext context
+        GeometricalContext context,
+        glm::mat4 lightSourceMatrix,
+        int isLightOn
     ) override
     {
         use();
@@ -44,6 +49,8 @@ struct SunProgram : public AStellarObject{
             glActiveTexture(AStellarObject::ArchiveTextureName[i]);
             glBindTexture(GL_TEXTURE_2D, AStellarObject::m_texturesIds[i]);
         }
+        glUniform1i(m_isLightOnLocation, isLightOn);
+        glUniform1f(m_uTimeLocation, time);
 
         glBindVertexArray(context.ctxtSphere.vao); // On utilise l'array vao
         glDrawArrays(GL_TRIANGLES, 0, context.ctxtSphere.m_shape->getVertexCount());
