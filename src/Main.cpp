@@ -20,7 +20,7 @@
 using namespace glimac;
 
 void drawData(uint focus, uint speed, double time, bool profile, bool traj) {
-    //system("clear");  
+    system("clear");  
     const std::vector<std::string> planetsName = {"SUN","MERCURE","VENUS","TERRE","MARS","JUPITER","SATURNE","URANUS","NEPTUNE","PLUTON"};
     std::cout << "focus : " << planetsName[focus] << std::endl
         << "speed : " << speed << std::endl
@@ -44,6 +44,8 @@ int main(int argc, char** argv) {
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLEW Version : " << glewGetString(GLEW_VERSION) << std::endl;
     glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE1);
+    glEnable(GL_TEXTURE_CUBE_MAP);
 
     // Loading & Compiling Textures
     GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID, SUN_TEXTURE_ID, MERCURE_TEXTURE_ID, VENUS_TEXTURE_ID,
@@ -178,14 +180,14 @@ int main(int argc, char** argv) {
      *********************************/
     std::vector<glimac::FilePath> faces
     {
-        "../assets/textures/MoonMap.jpg",
-        "../assets/textures/MoonMap.jpg",
-        "../assets/textures/MoonMap.jpg",
-        "../assets/textures/MoonMap.jpg",
-        "../assets/textures/MoonMap.jpg",
-        "../assets/textures/MoonMap.jpg"
+        "../assets/textures/Stars.jpg",
+        "../assets/textures/Stars.jpg",
+        "../assets/textures/Stars.jpg",
+        "../assets/textures/Stars.jpg",
+        "../assets/textures/Stars.jpg",
+        "../assets/textures/Stars.jpg"
     };
-    Sphere sphere(1, 32, 16);
+    Sphere sphere(1, 64, 64);
     Circle circle(2, 128);
     Ring ring(2, 1, 42);
     // ADDING DEPTH HANDLING

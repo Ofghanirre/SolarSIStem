@@ -25,34 +25,34 @@ struct SkyBox {
         m_uMVPMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "projection"), "projection");
         m_uMVMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "view"), "view");
         m_uTexture = checkValid(glGetUniformLocation(m_Program.getGLId(), "skybox"), "skybox");
-        //m_uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");
         loadCubemap(faces);
         std::cout << m_uMVPMatrix << " " << m_uMVMatrix << " " << m_uTexture << " " << m_textureID << std::endl;
     }
 
     void loadCubemap(std::vector<glimac::FilePath> faces)
     {
+        glEnable(GL_TEXTURE_CUBE_MAP);
         glGenTextures(1, &m_textureID);
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID);
-
-        for (unsigned int i = 0; i < faces.size(); i++)
-        {
-            std::unique_ptr<Image> loaded_content = loadImage(faces[i]);
-            if (loaded_content)
+            for (unsigned int i = 0; i < faces.size(); i++)
             {
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, loaded_content.get()->getWidth(), loaded_content.get()->getHeight(), 0, GL_RGBA, GL_FLOAT, loaded_content.get()->getPixels());
+                std::unique_ptr<Image> loaded_content = loadImage(faces[i]);
+                if (loaded_content)
+                {
+                    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, loaded_content.get()->getWidth(), loaded_content.get()->getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, loaded_content.get()->getPixels());
+                }
+                else
+                {
+                    std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+                    exit(EXIT_FAILURE);
+                }
             }
-            else
-            {
-                std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-                exit(EXIT_FAILURE);
-            }
-        }
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     }
 
     void use() {
@@ -89,16 +89,18 @@ struct SkyBox {
     void draw(
         glm::mat4 viewMatrix
     ) {
+        glEnable(GL_TEXTURE_CUBE_MAP);
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
         use();
-        glUniform1i(m_uTexture, 8);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(m_uTexture, 0);
 
         glm::mat4 view = glm::mat4(glm::mat3(viewMatrix)); // remove translation from the view matrix
         glm::mat4 projection = glm::perspective(glm::radians(70.f), WINDOW_WIDTH/(float)WINDOW_HEIGHT, 0.1f, 100.f);
         glUniformMatrix4fv(m_uMVMatrix, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(m_uMVPMatrix, 1, GL_FALSE, glm::value_ptr(projection));
 
-        glActiveTexture(GL_TEXTURE4);
+        
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID);
 
         glBindVertexArray(skyboxVAO);
