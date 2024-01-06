@@ -25,7 +25,7 @@ make
 ## Usage
 ```
 cd build/src/
-./name
+./solarSistem
 ```
 ## Member 
 
