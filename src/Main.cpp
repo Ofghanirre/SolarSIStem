@@ -21,6 +21,7 @@ using namespace glimac;
 
 void drawData(uint focus, uint speed, double time, bool profile, bool traj) {
     system("clear");  
+    const std::vector<std::string> planetsName = {"SUN","MERCURE","VENUS","TERRE","MARS","JUPITER","SATURNE","URANUS","NEPTUNE","PLUTON"};
     std::cout << "focus : " << planetsName[focus] << std::endl
         << "speed : " << speed << std::endl
         << "days : " << time << std::endl
@@ -43,6 +44,8 @@ int main(int argc, char** argv) {
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLEW Version : " << glewGetString(GLEW_VERSION) << std::endl;
     glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE1);
+    glEnable(GL_TEXTURE_CUBE_MAP);
 
     // Loading & Compiling Textures
     GLuint EARTH_TEXTURE_ID, MOON_TEXTURE_ID, CLOUD_TEXTURE_ID, SUN_TEXTURE_ID, MERCURE_TEXTURE_ID, VENUS_TEXTURE_ID,
@@ -81,7 +84,7 @@ int main(int argc, char** argv) {
     Program programNeptune(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/neptune3D.fs.glsl"));
     Program programPluton(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/pluton3D.fs.glsl"));
     Program programSatellite(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/satellite3D.fs.glsl"));
-    //Program programText(loadProgram(applicationPath.dirPath() + "shaders/text.vs.glsl", applicationPath.dirPath() + "shaders/text.fs.glsl"));
+    Program programSkyBox(loadProgram(applicationPath.dirPath() + "shaders/skybox.vs.glsl", applicationPath.dirPath() + "shaders/skybox.fs.glsl"));
     Program program2DShape(loadProgram(applicationPath.dirPath() + "shaders/circle.vs.glsl", applicationPath.dirPath() + "shaders/circle.fs.glsl"));
     Program programFilledRing(loadProgram(applicationPath.dirPath() + "shaders/ring.vs.glsl", applicationPath.dirPath() + "shaders/ring.fs.glsl"));
 
@@ -175,12 +178,26 @@ int main(int argc, char** argv) {
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
-    Sphere sphere(1, 32, 16);
+    std::vector<glimac::FilePath> faces
+    {
+        "../assets/textures/Stars.jpg",
+        "../assets/textures/Stars.jpg",
+        "../assets/textures/Stars.jpg",
+        "../assets/textures/Stars.jpg",
+        "../assets/textures/Stars.jpg",
+        "../assets/textures/Stars.jpg"
+    };
+    Sphere sphere(1, 64, 64);
     Circle circle(2, 128);
     Ring ring(2, 1, 42);
     // ADDING DEPTH HANDLING
     glEnable(GL_DEPTH_TEST);
     GeometricalContext context(WINDOW_WIDTH, WINDOW_HEIGHT, &sphere, &circle, &ring);
+    SkyBox sky(
+        programSkyBox, 
+        faces
+    );
+    sky.setContext();
 
     // Application loop:
     bool done = false;
@@ -194,7 +211,7 @@ int main(int argc, char** argv) {
         done = event.exeEvent(cam_move);
 
         // Uniform matrix refreshing
-        glClearColor(0.0, 0.0, 0.1, 0.0);
+        glClearColor(0.0, 1.0, 0.1, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clears le buffer et le depth buffer
         time = event.getTime();
         focus = event.getFocus();
@@ -225,6 +242,8 @@ int main(int argc, char** argv) {
             );
         }
 
+        sky.draw(event.getViewMatrix());
+
         // Update the display
         windowManager.swapBuffers();
     }
@@ -232,6 +251,7 @@ int main(int argc, char** argv) {
     context.ctxtSphere.free();
     context.ctxtCircle.free();
     context.ctxtRing.free();
+    sky.free();
     glDeleteTextures(1, &SUN_TEXTURE_ID);
     glDeleteTextures(1, &MERCURE_TEXTURE_ID);
     glDeleteTextures(1, &VENUS_TEXTURE_ID);

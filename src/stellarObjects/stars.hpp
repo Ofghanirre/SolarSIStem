@@ -1,8 +1,6 @@
 //
 // Created by Antonin Jean on 29/12/2023.
 //
-
-
 #pragma once
 
 #include "includes.hpp"

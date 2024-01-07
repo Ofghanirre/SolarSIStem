@@ -37,10 +37,11 @@ struct AStellarObject {
     GLuint m_uViewPosition;
     GLuint m_isLightOnLocation;
     AStellarObject(Program& program, std::vector<const GLchar*> textures_uniform_locations, std::vector<GLuint> texturesIds) : 
-        m_Program{program}, m_textures{texturesIds}
+        m_Program{program}
     {
         assert(textures_uniform_locations.size() < 3);
         assert(textures_uniform_locations.size() == texturesIds.size());
+        m_Program.use();
         m_uMVPMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix"), "uMVPMatrix");
         m_uMVMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uMVMatrix"), "uMVMatrix");
         m_uNormalMatrix = checkValid(glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix"), "uNormalMatrix");
