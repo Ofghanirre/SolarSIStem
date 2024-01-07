@@ -40,9 +40,7 @@ struct SkyBox {
                 if (loaded_content)
                 {
                     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, loaded_content.get()->getWidth(), loaded_content.get()->getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, loaded_content.get()->getPixels());
-                }
-                else
-                {
+                } else {
                     std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
                     exit(EXIT_FAILURE);
                 }
