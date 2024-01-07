@@ -22,6 +22,12 @@ float sinCarre(float a) {
     return (1 - glm::cos(2 * a)) / 2;
 }
 
+/**
+    @brief A StellarObject is an Object that can be represented in 3D, that possess 
+    a set of Satelittes (other StellarObjects)
+
+    It serves as a superclass drawing the standard behaviour for planets, stars, etc.
+*/
 struct AStellarObject {
     Program &m_Program;
 
@@ -71,6 +77,9 @@ struct AStellarObject {
         m_satelites.emplace_back(satelite);
     }
 
+    /**
+        @brief Function to display a StellarObject and its satelittes into a scene
+    */
     void drawAll(glm::mat4 globalMVMatrix, 
         glm::mat4 viewMatrix,
         float time,
@@ -89,6 +98,10 @@ struct AStellarObject {
         m_Program.use();
     }
 
+    /**
+        @brief Function to represent the object into a scene
+        This function is to be called by the drawAll method
+    */
     virtual glm::mat4 draw(
         glm::mat4 globalMVMatrix, 
         glm::mat4 viewMatrix,

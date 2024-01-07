@@ -22,6 +22,12 @@ GLint checkValid(GLint input, const char* name) {
     return input;
 }
 
+/**
+    @brief GeometricalContext is a dataClass wrapping the used forms in 
+    StellarObject displaying.
+
+    It has been made for optimisation and code cleaning
+*/
 struct GeometricalContext {
     GeometricalContext(uint width, uint height, 
         Sphere *sphere, 
