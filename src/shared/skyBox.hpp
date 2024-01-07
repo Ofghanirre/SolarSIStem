@@ -29,6 +29,9 @@ struct SkyBox {
         std::cout << m_uMVPMatrix << " " << m_uMVMatrix << " " << m_uTexture << " " << m_textureID << std::endl;
     }
 
+    /**
+     * Permet de charger les différentes face du cube
+     */
     void loadCubemap(std::vector<glimac::FilePath> faces)
     {
         glEnable(GL_TEXTURE_CUBE_MAP);
@@ -57,6 +60,9 @@ struct SkyBox {
         m_Program.use();
     }
 
+    /**
+     * Initialise les VAO et VBO pour le cube
+    */
     void setContext() {
         glGenBuffers(1, &skyboxVBO);
             glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
@@ -108,6 +114,9 @@ struct SkyBox {
         glDepthFunc(GL_LESS);
     }
 
+    /**
+     * décrit les vertexs du cube a afficher
+    */
     const std::vector<float> skyboxVertices = {
         // positions          
         -1.0f,  1.0f, -1.0f,
