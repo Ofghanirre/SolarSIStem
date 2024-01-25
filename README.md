@@ -30,4 +30,4 @@ cd build/src/
 ## Member 
 
 - Etienne Collet : etienne02.collet@gmail.com
-- Antonin Jean : ??
+- Antonin Jean : ofghanirre@gmail.com
